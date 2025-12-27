@@ -11,6 +11,10 @@ interface LanguageContextType {
 
 const translations = {
   ar: {
+    // Announcement Bar
+    'announcement.welcome': 'مرحبا بكم التوصيل متوفر',
+    'announcement.wilayas': 'ولاية والدفع عند الاستلام',
+    
     // Header
     'nav.home': 'الرئيسية',
     'nav.catalog': 'الكتالوج',
@@ -65,8 +69,64 @@ const translations = {
     'auth.password': 'كلمة المرور',
     'auth.welcome': 'مرحباً بك',
     'auth.welcomeBack': 'مرحباً بعودتك',
+
+    // Products Page
+    'products.title': 'كتالوج المنتجات',
+    'products.subtitle': 'اكتشف مجموعتنا الواسعة من معدات الصالون ومستحضرات التجميل الاحترافية',
+    'products.search': 'ابحث عن منتج...',
+    'products.filters': 'الفلاتر',
+    'products.categories': 'الفئات',
+    'products.priceRange': 'نطاق السعر',
+    'products.from': 'من',
+    'products.to': 'إلى',
+    'products.quickFilters': 'فلاتر سريعة',
+    'products.newProducts': 'منتجات جديدة',
+    'products.specialOffers': 'عروض خاصة',
+    'products.topRated': 'الأعلى تقييماً',
+    'products.noResults': 'لا توجد منتجات مطابقة لبحثك',
+    'products.resetFilters': 'إعادة تعيين الفلاتر',
+    'products.sortBy': 'ترتيب حسب',
+    'products.sortDefault': 'الترتيب الافتراضي',
+    'products.sortPriceAsc': 'السعر: من الأقل للأعلى',
+    'products.sortPriceDesc': 'السعر: من الأعلى للأقل',
+    'products.sortRating': 'التقييم',
+    'products.sortNewest': 'الأحدث',
+    'products.product': 'منتج',
+
+    // Product Card
+    'product.new': 'جديد',
+    'product.addToCart': 'أضف للسلة',
+    'product.currency': 'دج',
+
+    // Product Detail
+    'product.notFound': 'المنتج غير موجود',
+    'product.backToCatalog': 'العودة للكتالوج',
+    'product.outOf5': 'من 5',
+    'product.description': 'منتج عالي الجودة من Beauty Universe. مصمم لتلبية احتياجات صالونات التجميل الاحترافية. يتميز بالمتانة والأداء الممتاز مع ضمان لمدة سنة كاملة.',
+    'product.freeDelivery': 'توصيل مجاني',
+    'product.freeDeliveryDesc': 'للطلبات +50,000 دج',
+    'product.warranty': 'ضمان سنة',
+    'product.warrantyDesc': 'ضمان الجودة',
+    'product.easyReturn': 'إرجاع سهل',
+    'product.easyReturnDesc': 'خلال 14 يوم',
+    'product.specifications': 'المواصفات',
+    'product.brand': 'العلامة التجارية',
+    'product.category': 'الفئة',
+    'product.productNumber': 'رقم المنتج',
+    'product.condition': 'الحالة',
+    'product.conditionNew': 'جديد',
+    'product.warrantyLabel': 'الضمان',
+    'product.warrantyValue': 'سنة واحدة',
+    'product.availability': 'التوفر',
+    'product.inStock': 'متوفر في المخزون',
+    'product.relatedProducts': 'منتجات ذات صلة',
+    'product.viewAll': 'عرض الكل',
   },
   fr: {
+    // Announcement Bar
+    'announcement.welcome': 'Bienvenue ! Livraison disponible dans',
+    'announcement.wilayas': 'wilayas avec paiement à la livraison',
+    
     // Header
     'nav.home': 'Accueil',
     'nav.catalog': 'Catalogue',
@@ -121,6 +181,58 @@ const translations = {
     'auth.password': 'Mot de passe',
     'auth.welcome': 'Bienvenue',
     'auth.welcomeBack': 'Bon retour',
+
+    // Products Page
+    'products.title': 'Catalogue de Produits',
+    'products.subtitle': 'Découvrez notre large gamme d\'équipements de salon et de cosmétiques professionnels',
+    'products.search': 'Rechercher un produit...',
+    'products.filters': 'Filtres',
+    'products.categories': 'Catégories',
+    'products.priceRange': 'Fourchette de prix',
+    'products.from': 'De',
+    'products.to': 'À',
+    'products.quickFilters': 'Filtres rapides',
+    'products.newProducts': 'Nouveaux produits',
+    'products.specialOffers': 'Offres spéciales',
+    'products.topRated': 'Les mieux notés',
+    'products.noResults': 'Aucun produit ne correspond à votre recherche',
+    'products.resetFilters': 'Réinitialiser les filtres',
+    'products.sortBy': 'Trier par',
+    'products.sortDefault': 'Tri par défaut',
+    'products.sortPriceAsc': 'Prix : croissant',
+    'products.sortPriceDesc': 'Prix : décroissant',
+    'products.sortRating': 'Note',
+    'products.sortNewest': 'Plus récent',
+    'products.product': 'produit',
+
+    // Product Card
+    'product.new': 'Nouveau',
+    'product.addToCart': 'Ajouter au panier',
+    'product.currency': 'DA',
+
+    // Product Detail
+    'product.notFound': 'Produit non trouvé',
+    'product.backToCatalog': 'Retour au catalogue',
+    'product.outOf5': 'sur 5',
+    'product.description': 'Produit de haute qualité de Beauty Universe. Conçu pour répondre aux besoins des salons de beauté professionnels. Se distingue par sa durabilité et ses excellentes performances avec une garantie d\'un an.',
+    'product.freeDelivery': 'Livraison gratuite',
+    'product.freeDeliveryDesc': 'Pour commandes +50 000 DA',
+    'product.warranty': 'Garantie 1 an',
+    'product.warrantyDesc': 'Garantie qualité',
+    'product.easyReturn': 'Retour facile',
+    'product.easyReturnDesc': 'Sous 14 jours',
+    'product.specifications': 'Spécifications',
+    'product.brand': 'Marque',
+    'product.category': 'Catégorie',
+    'product.productNumber': 'Numéro de produit',
+    'product.condition': 'État',
+    'product.conditionNew': 'Neuf',
+    'product.warrantyLabel': 'Garantie',
+    'product.warrantyValue': 'Un an',
+    'product.availability': 'Disponibilité',
+    'product.inStock': 'En stock',
+    'product.relatedProducts': 'Produits similaires',
+    'product.viewAll': 'Voir tout',
   },
 };
 
