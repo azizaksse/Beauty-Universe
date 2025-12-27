@@ -43,7 +43,7 @@ const translations = {
     'bestsellers.viewAll': 'عرض الكل',
     
     // Trust Badges
-    'trust.delivery.title': 'توصيل 58 ولاية',
+    'trust.delivery.title': 'توصيل 69 ولاية',
     'trust.delivery.description': 'شحن سريع والدفع عند الاستلام.',
     'trust.exchange.title': 'استبدال خلال 7 أيام',
     'trust.exchange.description': 'إمكانية الاستبدال خلال 7 أيام مع رسوم الإرجاع.',
