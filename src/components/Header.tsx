@@ -1,11 +1,13 @@
-import { ShoppingCart, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User, Settings } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, isAdmin, signOut } = useAuth();
 
   const navLinks = [
     { label: "الرئيسية", href: "/" },
@@ -18,7 +20,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-primary font-display font-bold text-xl">BU</span>
             </div>
@@ -28,7 +30,7 @@ const Header = () => {
               </h1>
               <p className="text-xs text-muted-foreground">بيوتي يونيفرس</p>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
@@ -73,6 +75,33 @@ const Header = () => {
               <ShoppingCart className="w-5 h-5" />
             </Button>
 
+            {/* Auth */}
+            {user ? (
+              <div className="hidden md:flex items-center gap-2">
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="ghost" size="icon">
+                      <Settings className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  خروج
+                </Button>
+              </div>
+            ) : (
+              <Link to="/auth" className="hidden md:block">
+                <Button variant="ghost" size="icon">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+            )}
+
             {/* Mobile Menu */}
             <Button
               variant="ghost"
@@ -103,6 +132,39 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Mobile Auth */}
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="text-foreground hover:text-primary font-medium text-right"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      لوحة التحكم
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-muted-foreground hover:text-foreground font-medium text-right"
+                  >
+                    تسجيل الخروج
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="text-foreground hover:text-primary font-medium text-right"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  تسجيل الدخول
+                </Link>
+              )}
+
               <div className="flex items-center justify-end gap-2 text-sm pt-2">
                 <button className="font-bold text-foreground">AR</button>
                 <span className="text-muted-foreground">|</span>
