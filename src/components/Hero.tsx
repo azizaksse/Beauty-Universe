@@ -1,14 +1,20 @@
 import { Button } from "@/components/ui/button";
-import heroBg from "@/assets/hero-bg.jpg";
+import heroVideo from "@/assets/high-quality_file_hero_bckground.mp4";
 
 const Hero = () => {
   return (
     <section className="relative min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroBg})` }}
-      >
+      {/* Background Video */}
+      <div className="absolute inset-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/70 via-foreground/50 to-foreground/30" />
       </div>
 
