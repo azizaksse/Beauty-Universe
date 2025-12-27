@@ -1,14 +1,16 @@
 import { ShoppingCart, Search, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const navLinks = [
-    { label: "الرئيسية", href: "#" },
-    { label: "الكتالوج", href: "#categories" },
-    { label: "اتصل بنا", href: "#contact" },
+    { label: "الرئيسية", href: "/" },
+    { label: "الكتالوج", href: "/products" },
+    { label: "اتصل بنا", href: "/#contact" },
   ];
 
   return (
@@ -31,13 +33,17 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
-                className="text-foreground hover:text-primary transition-colors font-medium"
+                to={link.href}
+                className={`transition-colors font-medium ${
+                  location.pathname === link.href
+                    ? "text-primary"
+                    : "text-foreground hover:text-primary"
+                }`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -84,14 +90,18 @@ const Header = () => {
           <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4 animate-fade-in">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
-                  className="text-foreground hover:text-primary transition-colors font-medium text-right"
+                  to={link.href}
+                  className={`transition-colors font-medium text-right ${
+                    location.pathname === link.href
+                      ? "text-primary"
+                      : "text-foreground hover:text-primary"
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
               <div className="flex items-center justify-end gap-2 text-sm pt-2">
                 <button className="font-bold text-foreground">AR</button>
