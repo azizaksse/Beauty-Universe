@@ -1,34 +1,37 @@
+import { useLanguage } from "@/hooks/useLanguage";
 import barberChair from "@/assets/barber-chair.jpg";
 import ledMirror from "@/assets/led-mirror.jpg";
 import cosmetics from "@/assets/cosmetics.jpg";
 
-const categories = [
-  {
-    id: 1,
-    name: "حلاقة",
-    image: barberChair,
-  },
-  {
-    id: 2,
-    name: "تجميل",
-    image: ledMirror,
-  },
-  {
-    id: 3,
-    name: "مستحضرات تجميل",
-    image: cosmetics,
-  },
-];
-
 const Categories = () => {
+  const { t, dir } = useLanguage();
+
+  const categories = [
+    {
+      id: 1,
+      name: t('categories.barber'),
+      image: barberChair,
+    },
+    {
+      id: 2,
+      name: t('categories.beauty'),
+      image: ledMirror,
+    },
+    {
+      id: 3,
+      name: t('categories.cosmetics'),
+      image: cosmetics,
+    },
+  ];
+
   return (
-    <section id="categories" className="py-16 md:py-24 bg-background">
+    <section id="categories" className="py-16 md:py-24 bg-background" dir={dir}>
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-primary text-sm font-medium">فئاتنا</span>
+          <span className="text-primary text-sm font-medium">{t('categories.label')}</span>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2">
-            اكتشفي عالم الجمال
+            {t('categories.title')}
           </h2>
         </div>
 
