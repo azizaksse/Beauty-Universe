@@ -7,29 +7,34 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/products";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === Number(id));
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { language, t, dir } = useLanguage();
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-background" dir="rtl">
+      <div className="min-h-screen bg-background" dir={dir}>
         <Header />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="font-display text-3xl font-bold text-foreground mb-4">
-            المنتج غير موجود
+            {t('product.notFound')}
           </h1>
           <Link to="/products">
-            <Button variant="gold">العودة للكتالوج</Button>
+            <Button variant="gold">{t('product.backToCatalog')}</Button>
           </Link>
         </div>
         <Footer />
       </div>
     );
   }
+
+  const displayName = language === 'ar' ? product.nameAr : product.nameFr;
+  const displayCategory = language === 'ar' ? product.categoryAr : product.categoryFr;
 
   // Generate multiple images for gallery (using same image for demo)
   const images = [product.image, product.image, product.image, product.image];
@@ -51,16 +56,16 @@ const ProductDetail = () => {
     : 0;
 
   const specifications = [
-    { label: "العلامة التجارية", value: "Beauty Universe" },
-    { label: "الفئة", value: product.categoryAr },
-    { label: "رقم المنتج", value: `BU-${product.id.toString().padStart(4, "0")}` },
-    { label: "الحالة", value: "جديد" },
-    { label: "الضمان", value: "سنة واحدة" },
-    { label: "التوفر", value: "متوفر في المخزون" },
+    { label: t('product.brand'), value: "Beauty Universe" },
+    { label: t('product.category'), value: displayCategory },
+    { label: t('product.productNumber'), value: `BU-${product.id.toString().padStart(4, "0")}` },
+    { label: t('product.condition'), value: t('product.conditionNew') },
+    { label: t('product.warrantyLabel'), value: t('product.warrantyValue') },
+    { label: t('product.availability'), value: t('product.inStock') },
   ];
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
+    <div className="min-h-screen bg-background" dir={dir}>
       <Header />
 
       {/* Breadcrumb */}
@@ -68,14 +73,14 @@ const ProductDetail = () => {
         <div className="container mx-auto px-4">
           <nav className="flex items-center gap-2 text-sm">
             <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
-              الرئيسية
+              {t('nav.home')}
             </Link>
-            <ChevronRight className="w-4 h-4 text-muted-foreground rotate-180" />
+            <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
             <Link to="/products" className="text-muted-foreground hover:text-primary transition-colors">
-              الكتالوج
+              {t('nav.catalog')}
             </Link>
-            <ChevronRight className="w-4 h-4 text-muted-foreground rotate-180" />
-            <span className="text-foreground font-medium">{product.nameAr}</span>
+            <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            <span className="text-foreground font-medium">{displayName}</span>
           </nav>
         </div>
       </div>
@@ -93,12 +98,12 @@ const ProductDetail = () => {
                   className="w-full h-full object-cover"
                 />
                 {product.isNew && (
-                  <span className="absolute top-4 right-4 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full">
-                    جديد
+                  <span className={`absolute top-4 ${dir === 'rtl' ? 'right-4' : 'left-4'} bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full`}>
+                    {t('product.new')}
                   </span>
                 )}
                 {product.isSale && (
-                  <span className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-sm font-bold px-4 py-2 rounded-full">
+                  <span className={`absolute top-4 ${dir === 'rtl' ? 'left-4' : 'right-4'} bg-destructive text-destructive-foreground text-sm font-bold px-4 py-2 rounded-full`}>
                     -{discount}%
                   </span>
                 )}
@@ -124,10 +129,10 @@ const ProductDetail = () => {
             <div className="space-y-6">
               <div>
                 <span className="text-sm text-primary font-medium uppercase tracking-wider">
-                  {product.categoryAr}
+                  {displayCategory}
                 </span>
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2">
-                  {product.nameAr}
+                  {displayName}
                 </h1>
                 <p className="text-muted-foreground text-lg mt-1">{product.name}</p>
               </div>
@@ -144,25 +149,24 @@ const ProductDetail = () => {
                     </span>
                   ))}
                 </div>
-                <span className="text-muted-foreground">({product.rating} من 5)</span>
+                <span className="text-muted-foreground">({product.rating} {t('product.outOf5')})</span>
               </div>
 
               {/* Price */}
               <div className="flex items-baseline gap-4">
                 <span className="font-display text-4xl font-bold text-primary">
-                  {product.price.toLocaleString()} دج
+                  {product.price.toLocaleString()} {t('product.currency')}
                 </span>
                 {product.originalPrice && (
                   <span className="text-xl text-muted-foreground line-through">
-                    {product.originalPrice.toLocaleString()} دج
+                    {product.originalPrice.toLocaleString()} {t('product.currency')}
                   </span>
                 )}
               </div>
 
               {/* Description */}
               <p className="text-muted-foreground leading-relaxed">
-                منتج عالي الجودة من Beauty Universe. مصمم لتلبية احتياجات صالونات التجميل الاحترافية. 
-                يتميز بالمتانة والأداء الممتاز مع ضمان لمدة سنة كاملة.
+                {t('product.description')}
               </p>
 
               {/* Quantity & Add to Cart */}
@@ -170,7 +174,7 @@ const ProductDetail = () => {
                 <div className="flex items-center bg-card border border-border rounded-xl">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-3 hover:bg-secondary transition-colors rounded-r-xl"
+                    className={`p-3 hover:bg-secondary transition-colors ${dir === 'rtl' ? 'rounded-r-xl' : 'rounded-l-xl'}`}
                   >
                     <Minus className="w-5 h-5" />
                   </button>
@@ -179,14 +183,14 @@ const ProductDetail = () => {
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-3 hover:bg-secondary transition-colors rounded-l-xl"
+                    className={`p-3 hover:bg-secondary transition-colors ${dir === 'rtl' ? 'rounded-l-xl' : 'rounded-r-xl'}`}
                   >
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>
                 <Button variant="gold" size="xl" className="flex-1 min-w-[200px]">
-                  <ShoppingCart className="w-5 h-5 ml-2" />
-                  أضف للسلة
+                  <ShoppingCart className={`w-5 h-5 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                  {t('product.addToCart')}
                 </Button>
                 <Button variant="outline" size="icon" className="w-14 h-14">
                   <Heart className="w-6 h-6" />
@@ -203,8 +207,8 @@ const ProductDetail = () => {
                     <Truck className="w-6 h-6 text-primary" />
                   </div>
                   <div className="text-sm">
-                    <p className="font-medium text-foreground">توصيل مجاني</p>
-                    <p className="text-muted-foreground">للطلبات +50,000 دج</p>
+                    <p className="font-medium text-foreground">{t('product.freeDelivery')}</p>
+                    <p className="text-muted-foreground">{t('product.freeDeliveryDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -212,8 +216,8 @@ const ProductDetail = () => {
                     <Shield className="w-6 h-6 text-primary" />
                   </div>
                   <div className="text-sm">
-                    <p className="font-medium text-foreground">ضمان سنة</p>
-                    <p className="text-muted-foreground">ضمان الجودة</p>
+                    <p className="font-medium text-foreground">{t('product.warranty')}</p>
+                    <p className="text-muted-foreground">{t('product.warrantyDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -221,8 +225,8 @@ const ProductDetail = () => {
                     <RotateCcw className="w-6 h-6 text-primary" />
                   </div>
                   <div className="text-sm">
-                    <p className="font-medium text-foreground">إرجاع سهل</p>
-                    <p className="text-muted-foreground">خلال 14 يوم</p>
+                    <p className="font-medium text-foreground">{t('product.easyReturn')}</p>
+                    <p className="text-muted-foreground">{t('product.easyReturnDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -235,7 +239,7 @@ const ProductDetail = () => {
       <section className="py-12 bg-secondary">
         <div className="container mx-auto px-4">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-8 text-center">
-            المواصفات
+            {t('product.specifications')}
           </h2>
           <div className="max-w-3xl mx-auto bg-card rounded-2xl border border-border overflow-hidden">
             {specifications.map((spec, idx) => (
@@ -259,29 +263,30 @@ const ProductDetail = () => {
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-                منتجات ذات صلة
+                {t('product.relatedProducts')}
               </h2>
               <Link to="/products">
-                <Button variant="gold-outline">عرض الكل</Button>
+                <Button variant="gold-outline">{t('product.viewAll')}</Button>
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {allRelated.map((p) => (
-                <Link key={p.id} to={`/products/${p.id}`}>
-                  <ProductCard
-                    id={p.id}
-                    name={p.name}
-                    nameAr={p.nameAr}
-                    price={p.price}
-                    originalPrice={p.originalPrice}
-                    image={p.image}
-                    category={p.categoryAr}
-                    rating={p.rating}
-                    isNew={p.isNew}
-                    isSale={p.isSale}
-                    viewMode="grid"
-                  />
-                </Link>
+                <ProductCard
+                  key={p.id}
+                  id={p.id}
+                  name={p.name}
+                  nameAr={p.nameAr}
+                  nameFr={p.nameFr}
+                  price={p.price}
+                  originalPrice={p.originalPrice}
+                  image={p.image}
+                  categoryAr={p.categoryAr}
+                  categoryFr={p.categoryFr}
+                  rating={p.rating}
+                  isNew={p.isNew}
+                  isSale={p.isSale}
+                  viewMode="grid"
+                />
               ))}
             </div>
           </div>

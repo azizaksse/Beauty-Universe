@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { products, categories } from "@/data/products";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "rating" | "newest";
 type ViewMode = "grid" | "list";
@@ -23,6 +24,7 @@ const Products = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const { language, t, dir } = useLanguage();
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products];
@@ -39,7 +41,9 @@ const Products = () => {
         (p) =>
           p.name.toLowerCase().includes(query) ||
           p.nameAr.includes(query) ||
-          p.categoryAr.includes(query)
+          p.nameFr.toLowerCase().includes(query) ||
+          p.categoryAr.includes(query) ||
+          p.categoryFr.toLowerCase().includes(query)
       );
     }
 
@@ -63,7 +67,7 @@ const Products = () => {
   }, [selectedCategory, sortBy, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
+    <div className="min-h-screen bg-background" dir={dir}>
       <Header />
 
       {/* Page Header */}
@@ -71,10 +75,10 @@ const Products = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-              كتالوج المنتجات
+              {t('products.title')}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              اكتشف مجموعتنا الواسعة من معدات الصالون ومستحضرات التجميل الاحترافية
+              {t('products.subtitle')}
             </p>
           </div>
         </div>
@@ -89,12 +93,12 @@ const Products = () => {
             <div className="relative flex-1 max-w-md">
               <input
                 type="text"
-                placeholder="ابحث عن منتج..."
+                placeholder={t('products.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 pr-12 text-right placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className={`w-full bg-card border border-border rounded-xl px-4 py-3 ${dir === 'rtl' ? 'pr-12 text-right' : 'pl-12 text-left'} placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all`}
               />
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className={`absolute ${dir === 'rtl' ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground`} />
             </div>
 
             <div className="flex flex-wrap gap-3 items-center">
@@ -104,24 +108,24 @@ const Products = () => {
                 className="lg:hidden"
                 onClick={() => setShowFilters(!showFilters)}
               >
-                <SlidersHorizontal className="w-4 h-4 ml-2" />
-                الفلاتر
+                <SlidersHorizontal className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                {t('products.filters')}
                 <ChevronDown
-                  className={`w-4 h-4 mr-2 transition-transform ${showFilters ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 ${dir === 'rtl' ? 'mr-2' : 'ml-2'} transition-transform ${showFilters ? "rotate-180" : ""}`}
                 />
               </Button>
 
               {/* Sort */}
               <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
                 <SelectTrigger className="w-[180px] bg-card">
-                  <SelectValue placeholder="ترتيب حسب" />
+                  <SelectValue placeholder={t('products.sortBy')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="default">الترتيب الافتراضي</SelectItem>
-                  <SelectItem value="price-asc">السعر: من الأقل للأعلى</SelectItem>
-                  <SelectItem value="price-desc">السعر: من الأعلى للأقل</SelectItem>
-                  <SelectItem value="rating">التقييم</SelectItem>
-                  <SelectItem value="newest">الأحدث</SelectItem>
+                  <SelectItem value="default">{t('products.sortDefault')}</SelectItem>
+                  <SelectItem value="price-asc">{t('products.sortPriceAsc')}</SelectItem>
+                  <SelectItem value="price-desc">{t('products.sortPriceDesc')}</SelectItem>
+                  <SelectItem value="rating">{t('products.sortRating')}</SelectItem>
+                  <SelectItem value="newest">{t('products.sortNewest')}</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -151,7 +155,7 @@ const Products = () => {
 
               {/* Results Count */}
               <span className="text-sm text-muted-foreground hidden sm:inline">
-                {filteredAndSortedProducts.length} منتج
+                {filteredAndSortedProducts.length} {t('products.product')}
               </span>
             </div>
           </div>
@@ -163,20 +167,20 @@ const Products = () => {
             >
               <div className="bg-card border border-border rounded-2xl p-6 sticky top-24">
                 <h3 className="font-display text-lg font-semibold text-foreground mb-4">
-                  الفئات
+                  {t('products.categories')}
                 </h3>
                 <div className="space-y-2">
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.id)}
-                      className={`w-full text-right px-4 py-2.5 rounded-xl transition-all ${
+                      className={`w-full ${dir === 'rtl' ? 'text-right' : 'text-left'} px-4 py-2.5 rounded-xl transition-all ${
                         selectedCategory === cat.id
                           ? "bg-primary text-primary-foreground font-medium"
                           : "text-foreground hover:bg-secondary"
                       }`}
                     >
-                      {cat.label}
+                      {language === 'ar' ? cat.label : cat.labelFr}
                     </button>
                   ))}
                 </div>
@@ -184,18 +188,18 @@ const Products = () => {
                 {/* Price Range - Visual Only */}
                 <div className="mt-8 pt-6 border-t border-border">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-4">
-                    نطاق السعر
+                    {t('products.priceRange')}
                   </h3>
                   <div className="flex gap-3">
                     <input
                       type="number"
-                      placeholder="من"
-                      className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-right"
+                      placeholder={t('products.from')}
+                      className={`w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm ${dir === 'rtl' ? 'text-right' : 'text-left'}`}
                     />
                     <input
                       type="number"
-                      placeholder="إلى"
-                      className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-right"
+                      placeholder={t('products.to')}
+                      className={`w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm ${dir === 'rtl' ? 'text-right' : 'text-left'}`}
                     />
                   </div>
                 </div>
@@ -203,7 +207,7 @@ const Products = () => {
                 {/* Quick Filters */}
                 <div className="mt-6 pt-6 border-t border-border">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-4">
-                    فلاتر سريعة
+                    {t('products.quickFilters')}
                   </h3>
                   <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -211,21 +215,21 @@ const Products = () => {
                         type="checkbox"
                         className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                       />
-                      <span className="text-foreground">منتجات جديدة</span>
+                      <span className="text-foreground">{t('products.newProducts')}</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                       />
-                      <span className="text-foreground">عروض خاصة</span>
+                      <span className="text-foreground">{t('products.specialOffers')}</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                       />
-                      <span className="text-foreground">الأعلى تقييماً</span>
+                      <span className="text-foreground">{t('products.topRated')}</span>
                     </label>
                   </div>
                 </div>
@@ -237,7 +241,7 @@ const Products = () => {
               {filteredAndSortedProducts.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-muted-foreground text-lg">
-                    لا توجد منتجات مطابقة لبحثك
+                    {t('products.noResults')}
                   </p>
                   <Button
                     variant="gold-outline"
@@ -247,7 +251,7 @@ const Products = () => {
                       setSearchQuery("");
                     }}
                   >
-                    إعادة تعيين الفلاتر
+                    {t('products.resetFilters')}
                   </Button>
                 </div>
               ) : (
@@ -264,10 +268,12 @@ const Products = () => {
                       id={product.id}
                       name={product.name}
                       nameAr={product.nameAr}
+                      nameFr={product.nameFr}
                       price={product.price}
                       originalPrice={product.originalPrice}
                       image={product.image}
-                      category={product.categoryAr}
+                      categoryAr={product.categoryAr}
+                      categoryFr={product.categoryFr}
                       rating={product.rating}
                       isNew={product.isNew}
                       isSale={product.isSale}
