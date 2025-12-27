@@ -1,4 +1,5 @@
 import { ShoppingCart, Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 interface ProductCardProps {
@@ -16,6 +17,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({
+  id,
   name,
   nameAr,
   price,
@@ -33,7 +35,7 @@ const ProductCard = ({
 
   if (viewMode === "list") {
     return (
-      <div className="bg-card rounded-2xl overflow-hidden card-hover border border-border flex flex-col sm:flex-row-reverse">
+      <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border flex flex-col sm:flex-row-reverse">
         <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
           <img
             src={image}
@@ -93,12 +95,12 @@ const ProductCard = ({
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     );
   }
 
   return (
-    <div className="bg-card rounded-2xl overflow-hidden card-hover border border-border group">
+    <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border group">
       <div className="relative aspect-square overflow-hidden">
         <img
           src={image}
@@ -155,7 +157,7 @@ const ProductCard = ({
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
