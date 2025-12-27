@@ -155,7 +155,7 @@ const translations = {
     'bestsellers.viewAll': 'Voir tout',
     
     // Trust Badges
-    'trust.delivery.title': 'Livraison 58 wilayas',
+    'trust.delivery.title': 'Livraison 69 wilayas',
     'trust.delivery.description': 'Expédition rapide et paiement à la livraison.',
     'trust.exchange.title': 'Échange sous 7 jours',
     'trust.exchange.description': 'Possibilité d\'échange sous 7 jours avec frais de retour.',
