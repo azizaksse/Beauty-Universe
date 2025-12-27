@@ -23,6 +23,12 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <img src={logo} alt="Beauty Universe" className="h-12 w-12 rounded-full object-cover border-2 border-primary/30 shadow-md" />
+            <div className="text-right hidden sm:block">
+              <h1 className="font-display text-xl font-bold text-foreground">
+                Beauty Universe
+              </h1>
+              <p className="text-xs text-muted-foreground">بيوتي يونيفرس</p>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
