@@ -1,26 +1,29 @@
 import { Truck, RefreshCw, CreditCard } from "lucide-react";
-
-const badges = [
-  {
-    icon: Truck,
-    title: "توصيل 58 ولاية",
-    description: "شحن سريع والدفع عند الاستلام.",
-  },
-  {
-    icon: RefreshCw,
-    title: "استبدال خلال 7 أيام",
-    description: "إمكانية الاستبدال خلال 7 أيام مع رسوم الإرجاع.",
-  },
-  {
-    icon: CreditCard,
-    title: "الدفع عند الاستلام",
-    description: "لا يوجد دفع عبر الإنترنت، كل شيء يتم عند التسليم.",
-  },
-];
+import { useLanguage } from "@/hooks/useLanguage";
 
 const TrustBadges = () => {
+  const { t, dir } = useLanguage();
+
+  const badges = [
+    {
+      icon: Truck,
+      title: t('trust.delivery.title'),
+      description: t('trust.delivery.description'),
+    },
+    {
+      icon: RefreshCw,
+      title: t('trust.exchange.title'),
+      description: t('trust.exchange.description'),
+    },
+    {
+      icon: CreditCard,
+      title: t('trust.payment.title'),
+      description: t('trust.payment.description'),
+    },
+  ];
+
   return (
-    <section className="py-16 bg-secondary/50 border-y border-border">
+    <section className="py-16 bg-secondary/50 border-y border-border" dir={dir}>
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {badges.map((badge, index) => (
