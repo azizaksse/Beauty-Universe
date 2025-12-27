@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,15 +22,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-display font-bold text-xl">BU</span>
-            </div>
-            <div className="text-right">
-              <h1 className="font-display text-xl font-bold text-foreground">
-                Beauty Universe
-              </h1>
-              <p className="text-xs text-muted-foreground">بيوتي يونيفرس</p>
-            </div>
+            <img src={logo} alt="Beauty Universe" className="h-12 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
