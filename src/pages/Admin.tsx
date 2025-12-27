@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Package, 
@@ -11,7 +11,9 @@ import {
   ChevronRight,
   Save,
   X,
-  ImagePlus
+  ImagePlus,
+  Upload,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -81,6 +83,8 @@ const Admin = () => {
   const [editingProduct, setEditingProduct] = useState<typeof emptyProduct & { id?: string }>(emptyProduct);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -237,6 +241,64 @@ const Admin = () => {
       category: categoryId,
       category_ar: cat?.label || "",
     });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "خطأ",
+        description: "يرجى اختيار ملف صورة صالح",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "خطأ",
+        description: "حجم الصورة يجب أن يكون أقل من 5 ميجابايت",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      setEditingProduct({ ...editingProduct, image_url: urlData.publicUrl });
+      toast({ title: "تم رفع الصورة بنجاح" });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "خطأ",
+        description: "فشل في رفع الصورة",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   const filteredProducts = products.filter(
@@ -574,17 +636,66 @@ const Admin = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-foreground mb-2">
-                رابط الصورة
+                صورة المنتج
               </label>
-              <input
-                type="url"
-                value={editingProduct.image_url}
-                onChange={(e) =>
-                  setEditingProduct({ ...editingProduct, image_url: e.target.value })
-                }
-                className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-right"
-                placeholder="https://example.com/image.jpg"
-              />
+              <div className="flex gap-4 items-start">
+                {/* Image Preview */}
+                <div className="w-32 h-32 rounded-xl border-2 border-dashed border-border bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {editingProduct.image_url ? (
+                    <img
+                      src={editingProduct.image_url}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImagePlus className="w-8 h-8 text-muted-foreground" />
+                  )}
+                </div>
+
+                {/* Upload Controls */}
+                <div className="flex-1 space-y-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="product-image-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                        جاري الرفع...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 ml-2" />
+                        رفع صورة
+                      </>
+                    )}
+                  </Button>
+                  
+                  <p className="text-xs text-muted-foreground">
+                    أو أدخل رابط الصورة مباشرة:
+                  </p>
+                  <input
+                    type="url"
+                    value={editingProduct.image_url}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, image_url: e.target.value })
+                    }
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-2 text-right text-sm"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="md:col-span-2">
