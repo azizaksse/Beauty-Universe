@@ -8,6 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/products";
 import { useLanguage } from "@/hooks/useLanguage";
+import { formatPrice } from "@/lib/utils";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -155,11 +156,11 @@ const ProductDetail = () => {
               {/* Price */}
               <div className="flex items-baseline gap-4">
                 <span className="font-display text-4xl font-bold text-primary">
-                  {product.price.toLocaleString()} {t('product.currency')}
+                  {formatPrice(product.price)} {t('product.currency')}
                 </span>
                 {product.originalPrice && (
                   <span className="text-xl text-muted-foreground line-through">
-                    {product.originalPrice.toLocaleString()} {t('product.currency')}
+                    {formatPrice(product.originalPrice)} {t('product.currency')}
                   </span>
                 )}
               </div>
