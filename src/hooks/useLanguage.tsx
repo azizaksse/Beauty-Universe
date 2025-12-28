@@ -25,7 +25,7 @@ const translations = {
     'nav.dashboard': 'لوحة التحكم',
     
     // Hero
-    'hero.badge': 'تشكيلة جديدة 2025',
+    'hero.badge': 'تشكيلة جديدة 2026',
     'hero.title': 'Beauty Universe - عالم الجمال في الجزائر',
     'hero.description': 'بيع وتوزيع معدات ومنتجات ومواد الحلاقة والتجميل ومستحضرات التجميل. توصيل لـ 58 ولاية.',
     'hero.cta': 'اكتشفي الآن',
@@ -60,7 +60,7 @@ const translations = {
     'footer.quickLinks': 'روابط سريعة',
     'footer.aboutUs': 'من نحن',
     'footer.contactUs': 'تواصل معنا',
-    'footer.copyright': '© 2025 Beauty Universe. جميع الحقوق محفوظة.',
+    'footer.copyright': '© 2026 Beauty Universe. جميع الحقوق محفوظة.',
     
     // Auth
     'auth.login': 'تسجيل الدخول',
@@ -137,7 +137,7 @@ const translations = {
     'nav.dashboard': 'Tableau de bord',
     
     // Hero
-    'hero.badge': 'Nouvelle Collection 2025',
+    'hero.badge': 'Nouvelle Collection 2026',
     'hero.title': 'Beauty Universe - L\'univers de la beauté en Algérie',
     'hero.description': 'Vente et distribution d\'équipements, produits et matériels de coiffure, d\'esthétique et de cosmétiques. Livraison dans 58 wilayas.',
     'hero.cta': 'Découvrir maintenant',
@@ -172,7 +172,7 @@ const translations = {
     'footer.quickLinks': 'Liens rapides',
     'footer.aboutUs': 'À propos',
     'footer.contactUs': 'Contactez-nous',
-    'footer.copyright': '© 2025 Beauty Universe. Tous droits réservés.',
+    'footer.copyright': '© 2026 Beauty Universe. Tous droits réservés.',
     
     // Auth
     'auth.login': 'Connexion',
