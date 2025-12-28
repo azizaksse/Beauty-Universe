@@ -25,7 +25,7 @@ const Hero = () => {
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
-        <div className={`max-w-2xl ml-auto ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+        <div className={`max-w-2xl mx-auto text-center`}>
           {/* Badge */}
           <div className="animate-fade-in mb-8">
             <span className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/30 to-primary/10 backdrop-blur-md border border-primary/30 text-primary px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-primary/20">
@@ -43,7 +43,7 @@ const Hero = () => {
               </span>
             </h1>
             {/* Decorative line */}
-            <div className={`absolute -bottom-4 ${dir === 'rtl' ? 'right-0' : 'left-0'} w-24 h-1 bg-gradient-to-r from-primary to-primary/30 rounded-full`} />
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary to-primary/30 rounded-full" />
           </div>
 
           {/* Description Card */}
@@ -58,7 +58,7 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div 
-            className={`flex flex-wrap gap-4 animate-slide-up ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}
+            className="flex flex-wrap gap-4 justify-center animate-slide-up"
             style={{ animationDelay: "0.2s" }}
           >
             <Button
@@ -77,7 +77,7 @@ const Hero = () => {
 
           {/* Trust indicators */}
           <div 
-            className={`flex flex-wrap gap-6 mt-10 animate-slide-up ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}
+            className="flex flex-wrap gap-6 mt-10 justify-center animate-slide-up"
             style={{ animationDelay: "0.3s" }}
           >
             <div className="flex items-center gap-2 text-background/80">
