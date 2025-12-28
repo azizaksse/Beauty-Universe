@@ -236,7 +236,16 @@ const translations = {
   },
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const GLOBAL_LANGUAGE_CONTEXT_KEY = "__beauty_universe_language_context__";
+
+const globalForLanguage = globalThis as unknown as Record<string, unknown>;
+
+const LanguageContext =
+  (globalForLanguage[GLOBAL_LANGUAGE_CONTEXT_KEY] as
+    | React.Context<LanguageContextType | undefined>
+    | undefined) ?? createContext<LanguageContextType | undefined>(undefined);
+
+globalForLanguage[GLOBAL_LANGUAGE_CONTEXT_KEY] = LanguageContext;
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
