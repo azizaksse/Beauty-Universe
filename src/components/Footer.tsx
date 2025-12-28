@@ -217,12 +217,16 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-2">
               <span className="text-background/30 text-xs">
-                {language === 'ar' ? 'صنع بـ' : 'Fait avec'}
+                {language === 'ar' ? 'تم التطوير بواسطة' : 'Créé par'}
               </span>
-              <span className="text-primary">♥</span>
-              <span className="text-background/30 text-xs">
-                {language === 'ar' ? 'في الجزائر' : 'en Algérie'}
-              </span>
+              <a 
+                href="https://kassemthe-devloper.vercel.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 transition-colors text-xs font-medium"
+              >
+                Kassem
+              </a>
             </div>
           </div>
         </div>
