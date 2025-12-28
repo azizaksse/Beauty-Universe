@@ -27,7 +27,7 @@ const translations = {
     // Hero
     'hero.badge': 'تشكيلة جديدة 2026',
     'hero.title': 'Beauty Universe - عالم الجمال في الجزائر',
-    'hero.description': 'بيع وتوزيع معدات ومنتجات ومواد الحلاقة والتجميل ومستحضرات التجميل. توصيل لـ 58 ولاية.',
+    'hero.description': 'بيع وتوزيع معدات ومنتجات ومواد الحلاقة والتجميل ومستحضرات التجميل. توصيل لـ 69 ولاية.',
     'hero.cta': 'اكتشفي الآن',
     
     // Categories
@@ -139,7 +139,7 @@ const translations = {
     // Hero
     'hero.badge': 'Nouvelle Collection 2026',
     'hero.title': 'Beauty Universe - L\'univers de la beauté en Algérie',
-    'hero.description': 'Vente et distribution d\'équipements, produits et matériels de coiffure, d\'esthétique et de cosmétiques. Livraison dans 58 wilayas.',
+    'hero.description': 'Vente et distribution d\'équipements, produits et matériels de coiffure, d\'esthétique et de cosmétiques. Livraison dans 69 wilayas.',
     'hero.cta': 'Découvrir maintenant',
     
     // Categories
