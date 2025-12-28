@@ -2,6 +2,7 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardProps {
   id: number;
@@ -94,11 +95,11 @@ const ProductCard = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="font-display text-xl font-bold text-primary">
-                {price.toLocaleString()} {t('product.currency')}
+                {formatPrice(price)} {t('product.currency')}
               </span>
               {originalPrice && (
                 <span className="text-sm text-muted-foreground line-through">
-                  {originalPrice.toLocaleString()} {t('product.currency')}
+                  {formatPrice(originalPrice)} {t('product.currency')}
                 </span>
               )}
             </div>
@@ -157,11 +158,11 @@ const ProductCard = ({
         </div>
         <div className={`flex items-center gap-2 mt-3 ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}>
           <span className="font-display text-xl font-bold text-primary">
-            {price.toLocaleString()} {t('product.currency')}
+            {formatPrice(price)} {t('product.currency')}
           </span>
           {originalPrice && (
             <span className="text-sm text-muted-foreground line-through">
-              {originalPrice.toLocaleString()} {t('product.currency')}
+              {formatPrice(originalPrice)} {t('product.currency')}
             </span>
           )}
         </div>
