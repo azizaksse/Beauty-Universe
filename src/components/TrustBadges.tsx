@@ -1,5 +1,6 @@
 import { Truck, RefreshCw, CreditCard } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
 const TrustBadges = () => {
   const { t, dir } = useLanguage();
@@ -27,12 +28,13 @@ const TrustBadges = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {badges.map((badge, index) => (
-            <div
+            <AnimatedSection
               key={index}
-              className="flex flex-col items-center text-center gap-4 animate-slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              animation="fade-up"
+              delay={index * 150}
+              className="flex flex-col items-center text-center gap-4"
             >
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse-glow">
                 <badge.icon className="w-7 h-7 text-primary" />
               </div>
               <div>
@@ -41,7 +43,7 @@ const TrustBadges = () => {
                 </h3>
                 <p className="text-muted-foreground text-sm">{badge.description}</p>
               </div>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>

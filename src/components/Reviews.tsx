@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
 const reviews = [
   {
@@ -35,21 +36,22 @@ const Reviews = () => {
     <section className="py-16 md:py-24 bg-secondary/50" dir={dir}>
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <AnimatedSection animation="fade-up" className="text-center mb-12">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
             {t('reviews.title')}
           </h2>
           <div className="w-16 h-1 bg-primary mx-auto rounded-full mb-4" />
           <p className="text-muted-foreground">{t('reviews.subtitle')}</p>
-        </div>
+        </AnimatedSection>
 
         {/* Reviews Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {reviews.map((review, index) => (
-            <div
+            <AnimatedSection
               key={review.id}
-              className="bg-card rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              animation="fade-up"
+              delay={index * 100}
+              className="bg-card rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
               {/* Stars */}
               <div className={`flex gap-1 mb-4 ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}>
@@ -72,7 +74,7 @@ const Reviews = () => {
                 <p className="text-sm text-primary">{t('reviews.verified')}</p>
                 <p className="text-sm text-muted-foreground mt-1">{review.date}</p>
               </div>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>

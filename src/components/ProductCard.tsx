@@ -144,7 +144,7 @@ const ProductCard = ({
   }
 
   return (
-    <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border group">
+    <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border group transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
       <div className="relative aspect-square overflow-hidden">
         <img
           src={displayImage}
