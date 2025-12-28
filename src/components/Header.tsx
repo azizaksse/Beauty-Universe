@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCart } from "@/hooks/useCart";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
@@ -11,6 +12,7 @@ const Header = () => {
   const location = useLocation();
   const { user, isAdmin, signOut } = useAuth();
   const { language, setLanguage, t, dir } = useLanguage();
+  const { totalItems, setIsOpen } = useCart();
 
   const navLinks = [
     { label: t('nav.home'), href: "/" },
@@ -80,8 +82,13 @@ const Header = () => {
             </div>
 
             {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" onClick={() => setIsOpen(true)}>
               <ShoppingCart className="w-5 h-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
             </Button>
 
             {/* Auth */}
