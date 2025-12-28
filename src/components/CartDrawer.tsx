@@ -98,8 +98,8 @@ const CartDrawer = () => {
                 {t('cart.shippingNote')}
               </p>
               <div className="grid gap-2">
-                <Button variant="gold" size="lg" className="w-full">
-                  {t('cart.checkout')}
+                <Button variant="gold" size="lg" className="w-full" asChild onClick={() => setIsOpen(false)}>
+                  <Link to="/checkout">{t('cart.checkout')}</Link>
                 </Button>
                 <Button variant="outline" size="sm" onClick={clearCart} className="w-full">
                   <Trash2 className="w-4 h-4 mr-2" />
