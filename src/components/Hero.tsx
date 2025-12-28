@@ -1,27 +1,53 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
-import heroVideo from "@/assets/high-quality_file_hero_bckground.mp4";
+import heroBg from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
   const { t, dir, language } = useLanguage();
   const ArrowIcon = dir === 'rtl' ? ArrowLeft : ArrowRight;
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+
+  // Delay video loading for better initial performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowVideo(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <section className="relative min-h-[600px] md:min-h-[700px] flex items-center overflow-hidden" dir={dir}>
-      {/* Background Video */}
+      {/* Static Background Image (loads first) */}
       <div className="absolute inset-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-        >
-          <source src={heroVideo} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/60 to-foreground/40" />
+        <img 
+          src={heroBg} 
+          alt="Hero background"
+          className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-0' : 'opacity-100'}`}
+        />
       </div>
+
+      {/* Background Video (loads after delay) */}
+      {showVideo && (
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            onLoadedData={() => setVideoLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <source src="/src/assets/high-quality_file_hero_bckground.mp4" type="video/mp4" />
+          </video>
+        </div>
+      )}
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/60 to-foreground/40" />
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">

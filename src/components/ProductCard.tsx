@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ShoppingCart, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -74,16 +75,19 @@ const ProductCard = ({
     navigate('/checkout');
   };
 
+  const [imageLoaded, setImageLoaded] = useState(false);
   const placeholderImage = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop";
   const displayImage = image || placeholderImage;
 
   if (viewMode === "list") {
     return (
       <Link to={`/products/${id}`} className={`block bg-card rounded-2xl overflow-hidden card-hover border border-border flex flex-col sm:flex-row${dir === 'rtl' ? '-reverse' : ''}`}>
-        <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
+        <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0 bg-secondary">
           <img
             src={displayImage}
             alt={name}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover"
           />
           {isNew && (
@@ -145,11 +149,20 @@ const ProductCard = ({
 
   return (
     <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border group transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative aspect-square overflow-hidden bg-secondary">
+        {/* Skeleton placeholder */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-secondary">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+          </div>
+        )}
         <img
           src={displayImage}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          loading="lazy"
+          decoding="async"
+          onLoad={() => setImageLoaded(true)}
+          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         {isNew && (

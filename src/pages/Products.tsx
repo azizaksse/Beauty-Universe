@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Grid3X3, List, SlidersHorizontal, ChevronDown, Search, Loader2 } from "lucide-react";
+import { Grid3X3, List, SlidersHorizontal, ChevronDown, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -15,6 +15,7 @@ import {
 import { categories, Product } from "@/data/products";
 import { useLanguage } from "@/hooks/useLanguage";
 import { supabase } from "@/integrations/supabase/client";
+import { ProductCardSkeleton } from "@/components/Skeleton";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "rating" | "newest";
 type ViewMode = "grid" | "list";
@@ -259,8 +260,14 @@ const Products = () => {
             {/* Products Grid */}
             <div className="flex-1">
               {loading ? (
-                <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <div className={`grid gap-6 ${
+                  viewMode === "grid"
+                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1"
+                }`}>
+                  {[...Array(6)].map((_, i) => (
+                    <ProductCardSkeleton key={i} />
+                  ))}
                 </div>
               ) : filteredAndSortedProducts.length === 0 ? (
                 <div className="text-center py-16">
