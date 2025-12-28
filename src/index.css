@@ -127,7 +127,18 @@
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shadow-lg;
+    @apply transition-all duration-300 hover:-translate-y-2;
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.08),
+      0 10px 20px -5px rgba(0, 0, 0, 0.1),
+      0 20px 40px -10px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-hover:hover {
+    box-shadow: 
+      0 8px 12px -2px rgba(0, 0, 0, 0.1),
+      0 20px 40px -10px rgba(0, 0, 0, 0.15),
+      0 40px 60px -20px rgba(0, 0, 0, 0.12);
   }
 
   .btn-gold {
