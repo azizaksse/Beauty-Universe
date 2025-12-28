@@ -1,5 +1,5 @@
-import { ShoppingCart, Heart } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ShoppingCart, Zap } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCart } from "@/hooks/useCart";
@@ -37,6 +37,7 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const { language, t, dir } = useLanguage();
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
@@ -57,6 +58,20 @@ const ProductCard = ({
       image,
     });
     toast.success(t('cart.addedToCart'));
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id,
+      name,
+      nameAr,
+      price,
+      originalPrice,
+      image,
+    });
+    navigate('/checkout');
   };
 
   const placeholderImage = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop";
@@ -104,12 +119,12 @@ const ProductCard = ({
           </div>
           <div className="flex items-center justify-between mt-4">
             <div className="flex gap-2">
-              <Button size="sm" variant="gold" onClick={handleAddToCart}>
-                <ShoppingCart className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
-                {t('product.addToCart')}
+              <Button size="sm" variant="gold" onClick={handleBuyNow}>
+                <Zap className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
+                {language === 'ar' ? 'اطلب الآن' : 'Commander'}
               </Button>
-              <Button size="sm" variant="ghost">
-                <Heart className="w-4 h-4" />
+              <Button size="sm" variant="ghost" onClick={handleAddToCart}>
+                <ShoppingCart className="w-4 h-4" />
               </Button>
             </div>
             <div className="flex items-center gap-2">
@@ -148,12 +163,12 @@ const ProductCard = ({
           </span>
         )}
         <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-          <Button size="sm" variant="gold" className="flex-1" onClick={handleAddToCart}>
-            <ShoppingCart className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
-            {t('product.addToCart')}
+          <Button size="sm" variant="gold" className="flex-1" onClick={handleBuyNow}>
+            <Zap className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
+            {language === 'ar' ? 'اطلب الآن' : 'Commander'}
           </Button>
-          <Button size="sm" variant="secondary">
-            <Heart className="w-4 h-4" />
+          <Button size="sm" variant="secondary" onClick={handleAddToCart}>
+            <ShoppingCart className="w-4 h-4" />
           </Button>
         </div>
       </div>
