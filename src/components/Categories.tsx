@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { AnimatedSection, StaggerContainer } from "@/hooks/useScrollAnimation";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 import barberChair from "@/assets/barber-chair.jpg";
 import ledMirror from "@/assets/led-mirror.jpg";
 import cosmetics from "@/assets/cosmetics.jpg";
@@ -43,12 +44,14 @@ const Categories = () => {
               key={category.id}
               animation="zoom-in"
               delay={index * 150}
-              className="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer"
+              className="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer bg-secondary"
             >
               {/* Image */}
               <img
                 src={category.image}
                 alt={category.name}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
 
