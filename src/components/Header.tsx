@@ -1,4 +1,4 @@
-import { ShoppingCart, Search, Menu, X, User, Settings } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User, UserCog } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -96,8 +96,8 @@ const Header = () => {
               <div className="hidden md:flex items-center gap-2">
                 {isAdmin && (
                   <Link to="/admin">
-                    <Button variant="ghost" size="icon">
-                      <Settings className="w-5 h-5" />
+                    <Button variant="ghost" size="icon" title={t('nav.dashboard')}>
+                      <UserCog className="w-5 h-5" />
                     </Button>
                   </Link>
                 )}
