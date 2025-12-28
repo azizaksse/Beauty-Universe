@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Loader2 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
@@ -36,9 +37,9 @@ const BestSellers = () => {
     <section className="py-16 md:py-24 bg-background" dir={dir}>
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className={`flex items-center justify-between mb-12 ${dir === 'rtl' ? 'flex-row' : 'flex-row-reverse'}`}>
+        <AnimatedSection animation="fade-up" className={`flex items-center justify-between mb-12 ${dir === 'rtl' ? 'flex-row' : 'flex-row-reverse'}`}>
           <Link to="/products">
-            <Button variant="outline" className="btn-outline-gold rounded-full px-6">
+            <Button variant="outline" className="btn-outline-gold rounded-full px-6 hover:scale-105 transition-transform">
               {t('bestsellers.viewAll')}
             </Button>
           </Link>
@@ -49,7 +50,7 @@ const BestSellers = () => {
               {t('bestsellers.title')}
             </h2>
           </div>
-        </div>
+        </AnimatedSection>
 
         {/* Products Grid */}
         {loading ? (
@@ -63,12 +64,15 @@ const BestSellers = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {products.map((product, index) => (
-              <Link
-                to={`/products/${product.id}`}
+              <AnimatedSection
                 key={product.id}
-                className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                animation="fade-up"
+                delay={index * 150}
               >
+                <Link
+                  to={`/products/${product.id}`}
+                  className="group block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover"
+                >
                 {/* Image */}
                 <div className="relative aspect-square overflow-hidden bg-secondary">
                   <img
@@ -97,8 +101,9 @@ const BestSellers = () => {
                   <p className="text-primary font-bold text-xl">
                     {formatPrice(product.price)} {language === 'ar' ? 'دج' : 'DA'}
                   </p>
-                </div>
-              </Link>
+                  </div>
+                </Link>
+              </AnimatedSection>
             ))}
           </div>
         )}

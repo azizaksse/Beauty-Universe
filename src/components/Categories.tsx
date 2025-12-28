@@ -1,4 +1,5 @@
 import { useLanguage } from "@/hooks/useLanguage";
+import { AnimatedSection, StaggerContainer } from "@/hooks/useScrollAnimation";
 import barberChair from "@/assets/barber-chair.jpg";
 import ledMirror from "@/assets/led-mirror.jpg";
 import cosmetics from "@/assets/cosmetics.jpg";
@@ -28,20 +29,21 @@ const Categories = () => {
     <section id="categories" className="py-16 md:py-24 bg-background" dir={dir}>
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <AnimatedSection animation="fade-up" className="text-center mb-12">
           <span className="text-primary text-sm font-medium">{t('categories.label')}</span>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2">
             {t('categories.title')}
           </h2>
-        </div>
+        </AnimatedSection>
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {categories.map((category, index) => (
-            <div
+            <AnimatedSection
               key={category.id}
-              className="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer animate-slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              animation="zoom-in"
+              delay={index * 150}
+              className="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer"
             >
               {/* Image */}
               <img
@@ -62,7 +64,7 @@ const Categories = () => {
 
               {/* Hover Effect */}
               <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>
