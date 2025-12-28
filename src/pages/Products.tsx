@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Grid3X3, List, SlidersHorizontal, ChevronDown, Search } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Grid3X3, List, SlidersHorizontal, ChevronDown, Search, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -12,19 +12,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { products, categories } from "@/data/products";
+import { categories, Product } from "@/data/products";
 import { useLanguage } from "@/hooks/useLanguage";
+import { supabase } from "@/integrations/supabase/client";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "rating" | "newest";
 type ViewMode = "grid" | "list";
 
 const Products = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<SortOption>("default");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const { language, t, dir } = useLanguage();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setProducts(data);
+    }
+    setLoading(false);
+  };
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products];
@@ -40,10 +61,9 @@ const Products = () => {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(query) ||
-          p.nameAr.includes(query) ||
-          p.nameFr.toLowerCase().includes(query) ||
-          p.categoryAr.includes(query) ||
-          p.categoryFr.toLowerCase().includes(query)
+          p.name_ar.includes(query) ||
+          p.category_ar.includes(query) ||
+          p.category.toLowerCase().includes(query)
       );
     }
 
@@ -56,15 +76,15 @@ const Products = () => {
         result.sort((a, b) => b.price - a.price);
         break;
       case "rating":
-        result.sort((a, b) => b.rating - a.rating);
+        result.sort((a, b) => (b.rating || 5) - (a.rating || 5));
         break;
       case "newest":
-        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        result.sort((a, b) => (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0));
         break;
     }
 
     return result;
-  }, [selectedCategory, sortBy, searchQuery]);
+  }, [products, selectedCategory, sortBy, searchQuery]);
 
   return (
     <div className="min-h-screen bg-background" dir={dir}>
@@ -238,7 +258,11 @@ const Products = () => {
 
             {/* Products Grid */}
             <div className="flex-1">
-              {filteredAndSortedProducts.length === 0 ? (
+              {loading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : filteredAndSortedProducts.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-muted-foreground text-lg">
                     {t('products.noResults')}
@@ -267,16 +291,15 @@ const Products = () => {
                       key={product.id}
                       id={product.id}
                       name={product.name}
-                      nameAr={product.nameAr}
-                      nameFr={product.nameFr}
+                      nameAr={product.name_ar}
                       price={product.price}
-                      originalPrice={product.originalPrice}
-                      image={product.image}
-                      categoryAr={product.categoryAr}
-                      categoryFr={product.categoryFr}
+                      originalPrice={product.original_price}
+                      image={product.image_url}
+                      categoryAr={product.category_ar}
+                      categoryFr={product.category}
                       rating={product.rating}
-                      isNew={product.isNew}
-                      isSale={product.isSale}
+                      isNew={product.is_new}
+                      isSale={product.is_sale}
                       viewMode={viewMode}
                     />
                   ))}
