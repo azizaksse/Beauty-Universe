@@ -48,7 +48,19 @@ const Footer = () => {
   ];
 
   return (
-    <footer id="contact" className="bg-foreground text-background" dir={dir}>
+    <footer className="bg-foreground text-background" dir={dir}>
+      {/* Contact Section Header */}
+      <div id="contact" className="border-b border-background/10 bg-background/5">
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h2 className="font-display text-3xl font-bold text-background mb-2">
+            {t('footer.contactUs')}
+          </h2>
+          <p className="text-background/60">
+            {language === 'ar' ? 'نحن هنا لمساعدتك' : 'Nous sommes là pour vous aider'}
+          </p>
+        </div>
+      </div>
+
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
