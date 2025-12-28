@@ -1,6 +1,6 @@
 import { ShoppingCart, Search, Menu, X, UserCog } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -10,14 +10,26 @@ import logo from "@/assets/logo.png";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
   const { language, setLanguage, t, dir } = useLanguage();
   const { totalItems, setIsOpen } = useCart();
 
+  const scrollToContact = () => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const navLinks = [
-    { label: t('nav.home'), href: "/" },
-    { label: t('nav.catalog'), href: "/products" },
-    { label: t('nav.contact'), href: "/#contact" },
+    { label: t('nav.home'), href: "/", isHash: false },
+    { label: t('nav.catalog'), href: "/products", isHash: false },
+    { label: t('nav.contact'), href: "/#contact", isHash: true },
   ];
 
   return (
@@ -38,17 +50,27 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                to={link.href}
-                className={`transition-colors font-medium ${
-                  location.pathname === link.href
-                    ? "text-primary"
-                    : "text-foreground hover:text-primary"
-                }`}
-              >
-                {link.label}
-              </Link>
+              link.isHash ? (
+                <button
+                  key={link.label}
+                  onClick={scrollToContact}
+                  className={`transition-colors font-medium text-foreground hover:text-primary`}
+                >
+                  {link.label}
+                </button>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className={`transition-colors font-medium ${
+                    location.pathname === link.href
+                      ? "text-primary"
+                      : "text-foreground hover:text-primary"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </nav>
 
@@ -129,18 +151,31 @@ const Header = () => {
           <nav className="md:hidden mt-4 pb-4 border-t border-border pt-4 animate-fade-in">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.href}
-                  className={`transition-colors font-medium ${dir === 'rtl' ? 'text-right' : 'text-left'} ${
-                    location.pathname === link.href
-                      ? "text-primary"
-                      : "text-foreground hover:text-primary"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
+                link.isHash ? (
+                  <button
+                    key={link.label}
+                    onClick={() => {
+                      scrollToContact();
+                      setIsMenuOpen(false);
+                    }}
+                    className={`transition-colors font-medium ${dir === 'rtl' ? 'text-right' : 'text-left'} text-foreground hover:text-primary`}
+                  >
+                    {link.label}
+                  </button>
+                ) : (
+                  <Link
+                    key={link.label}
+                    to={link.href}
+                    className={`transition-colors font-medium ${dir === 'rtl' ? 'text-right' : 'text-left'} ${
+                      location.pathname === link.href
+                        ? "text-primary"
+                        : "text-foreground hover:text-primary"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
 
               {/* Mobile Auth */}
