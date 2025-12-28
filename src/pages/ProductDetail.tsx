@@ -8,7 +8,9 @@ import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/products";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/utils";
+import { toast } from "sonner";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -16,7 +18,21 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { language, t, dir } = useLanguage();
+  const { addItem } = useCart();
 
+  const handleAddToCart = () => {
+    if (!product) return;
+    addItem({
+      id: product.id,
+      name: product.name,
+      nameAr: product.nameAr,
+      nameFr: product.nameFr,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+    }, quantity);
+    toast.success(t('cart.addedToCart'));
+  };
   if (!product) {
     return (
       <div className="min-h-screen bg-background" dir={dir}>
@@ -189,7 +205,7 @@ const ProductDetail = () => {
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>
-                <Button variant="gold" size="xl" className="flex-1 min-w-[200px]">
+                <Button variant="gold" size="xl" className="flex-1 min-w-[200px]" onClick={handleAddToCart}>
                   <ShoppingCart className={`w-5 h-5 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                   {t('product.addToCart')}
                 </Button>

@@ -121,6 +121,16 @@ const translations = {
     'product.inStock': 'متوفر في المخزون',
     'product.relatedProducts': 'منتجات ذات صلة',
     'product.viewAll': 'عرض الكل',
+
+    // Cart
+    'cart.title': 'سلة التسوق',
+    'cart.empty': 'سلة التسوق فارغة',
+    'cart.continueShopping': 'متابعة التسوق',
+    'cart.subtotal': 'المجموع الفرعي',
+    'cart.shippingNote': 'الشحن والضرائب تُحسب عند الدفع',
+    'cart.checkout': 'إتمام الشراء',
+    'cart.clearCart': 'إفراغ السلة',
+    'cart.addedToCart': 'تمت الإضافة للسلة',
   },
   fr: {
     // Announcement Bar
@@ -233,6 +243,16 @@ const translations = {
     'product.inStock': 'En stock',
     'product.relatedProducts': 'Produits similaires',
     'product.viewAll': 'Voir tout',
+
+    // Cart
+    'cart.title': 'Panier',
+    'cart.empty': 'Votre panier est vide',
+    'cart.continueShopping': 'Continuer vos achats',
+    'cart.subtotal': 'Sous-total',
+    'cart.shippingNote': 'Livraison et taxes calculées à la caisse',
+    'cart.checkout': 'Passer à la caisse',
+    'cart.clearCart': 'Vider le panier',
+    'cart.addedToCart': 'Ajouté au panier',
   },
 };
 

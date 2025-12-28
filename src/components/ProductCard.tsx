@@ -2,7 +2,9 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   id: number;
@@ -36,12 +38,28 @@ const ProductCard = ({
   viewMode,
 }: ProductCardProps) => {
   const { language, t, dir } = useLanguage();
+  const { addItem } = useCart();
   const discount = originalPrice
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
   const displayName = language === 'ar' ? nameAr : nameFr;
   const displayCategory = language === 'ar' ? categoryAr : categoryFr;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id,
+      name,
+      nameAr,
+      nameFr,
+      price,
+      originalPrice,
+      image,
+    });
+    toast.success(t('cart.addedToCart'));
+  };
 
   if (viewMode === "list") {
     return (
@@ -85,7 +103,7 @@ const ProductCard = ({
           </div>
           <div className="flex items-center justify-between mt-4">
             <div className="flex gap-2">
-              <Button size="sm" variant="gold">
+              <Button size="sm" variant="gold" onClick={handleAddToCart}>
                 <ShoppingCart className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
                 {t('product.addToCart')}
               </Button>
@@ -129,7 +147,7 @@ const ProductCard = ({
           </span>
         )}
         <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-          <Button size="sm" variant="gold" className="flex-1">
+          <Button size="sm" variant="gold" className="flex-1" onClick={handleAddToCart}>
             <ShoppingCart className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
             {t('product.addToCart')}
           </Button>
