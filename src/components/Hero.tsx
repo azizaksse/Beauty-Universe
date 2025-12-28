@@ -25,7 +25,7 @@ const Hero = () => {
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
-        <div className={`max-w-2xl ${dir === 'rtl' ? 'mr-auto text-right' : 'ml-auto text-left'}`}>
+        <div className={`max-w-2xl ml-auto ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
           {/* Badge */}
           <div className="animate-fade-in mb-8">
             <span className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/30 to-primary/10 backdrop-blur-md border border-primary/30 text-primary px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-primary/20">
