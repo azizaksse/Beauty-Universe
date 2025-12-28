@@ -1,4 +1,4 @@
-import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -9,6 +9,8 @@ import { formatPrice } from "@/lib/utils";
 const CartDrawer = () => {
   const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice, isOpen, setIsOpen } = useCart();
   const { language, t, dir } = useLanguage();
+
+  const placeholderImage = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop";
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -34,12 +36,12 @@ const CartDrawer = () => {
           <>
             <div className="flex-1 overflow-y-auto py-4 space-y-4">
               {items.map((item) => {
-                const displayName = language === 'ar' ? item.nameAr : item.nameFr;
+                const displayName = language === 'ar' ? item.nameAr : item.name;
                 return (
                   <div key={item.id} className="flex gap-4 bg-card rounded-xl p-3 border border-border">
                     <Link to={`/products/${item.id}`} onClick={() => setIsOpen(false)}>
                       <img
-                        src={item.image}
+                        src={item.image || placeholderImage}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-lg"
                       />

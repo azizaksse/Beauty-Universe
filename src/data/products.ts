@@ -1,190 +1,27 @@
-import barberChair from "@/assets/barber-chair.jpg";
-import ledMirror from "@/assets/led-mirror.jpg";
-import cosmetics from "@/assets/cosmetics.jpg";
-
 export interface Product {
-  id: number;
+  id: string;
   name: string;
-  nameAr: string;
-  nameFr: string;
+  name_ar: string;
   price: number;
-  originalPrice?: number;
-  image: string;
+  original_price?: number | null;
+  image_url: string | null;
   category: string;
-  categoryAr: string;
-  categoryFr: string;
-  rating: number;
-  isNew?: boolean;
-  isSale?: boolean;
+  category_ar: string;
+  rating: number | null;
+  is_new?: boolean | null;
+  is_sale?: boolean | null;
+  is_active?: boolean | null;
+  description?: string | null;
+  description_ar?: string | null;
+  stock?: number | null;
 }
 
 export const categories = [
   { id: "all", label: "الكل", labelFr: "Tout" },
-  { id: "chairs", label: "كراسي الحلاقة", labelFr: "Fauteuils de coiffure" },
-  { id: "mirrors", label: "المرايا", labelFr: "Miroirs" },
+  { id: "chairs", label: "كراسي", labelFr: "Chaises" },
+  { id: "mirrors", label: "مرايا", labelFr: "Miroirs" },
+  { id: "furniture", label: "أثاث", labelFr: "Mobilier" },
   { id: "cosmetics", label: "مستحضرات التجميل", labelFr: "Cosmétiques" },
-  { id: "tools", label: "أدوات الحلاقة", labelFr: "Outils de coiffure" },
-  { id: "furniture", label: "الأثاث", labelFr: "Mobilier" },
-  { id: "accessories", label: "الإكسسوارات", labelFr: "Accessoires" },
-];
-
-export const products: Product[] = [
-  {
-    id: 1,
-    name: "Professional Barber Chair",
-    nameAr: "كرسي حلاقة احترافي",
-    nameFr: "Fauteuil de coiffure professionnel",
-    price: 85000,
-    originalPrice: 95000,
-    image: barberChair,
-    category: "chairs",
-    categoryAr: "كراسي الحلاقة",
-    categoryFr: "Fauteuils de coiffure",
-    rating: 5,
-    isSale: true,
-  },
-  {
-    id: 2,
-    name: "LED Makeup Mirror",
-    nameAr: "مرآة مكياج LED",
-    nameFr: "Miroir de maquillage LED",
-    price: 12000,
-    image: ledMirror,
-    category: "mirrors",
-    categoryAr: "المرايا",
-    categoryFr: "Miroirs",
-    rating: 4,
-    isNew: true,
-  },
-  {
-    id: 3,
-    name: "Premium Cosmetics Set",
-    nameAr: "طقم مستحضرات تجميل فاخر",
-    nameFr: "Coffret cosmétiques premium",
-    price: 25000,
-    originalPrice: 32000,
-    image: cosmetics,
-    category: "cosmetics",
-    categoryAr: "مستحضرات التجميل",
-    categoryFr: "Cosmétiques",
-    rating: 5,
-    isSale: true,
-  },
-  {
-    id: 4,
-    name: "Hydraulic Styling Chair",
-    nameAr: "كرسي تصفيف هيدروليكي",
-    nameFr: "Fauteuil de coiffure hydraulique",
-    price: 72000,
-    image: barberChair,
-    category: "chairs",
-    categoryAr: "كراسي الحلاقة",
-    categoryFr: "Fauteuils de coiffure",
-    rating: 4,
-  },
-  {
-    id: 5,
-    name: "Hollywood Vanity Mirror",
-    nameAr: "مرآة هوليوود للزينة",
-    nameFr: "Miroir Hollywood",
-    price: 18500,
-    image: ledMirror,
-    category: "mirrors",
-    categoryAr: "المرايا",
-    categoryFr: "Miroirs",
-    rating: 5,
-    isNew: true,
-  },
-  {
-    id: 6,
-    name: "Professional Hair Dryer",
-    nameAr: "مجفف شعر احترافي",
-    nameFr: "Sèche-cheveux professionnel",
-    price: 8500,
-    originalPrice: 11000,
-    image: cosmetics,
-    category: "tools",
-    categoryAr: "أدوات الحلاقة",
-    categoryFr: "Outils de coiffure",
-    rating: 4,
-    isSale: true,
-  },
-  {
-    id: 7,
-    name: "Barber Station Cabinet",
-    nameAr: "خزانة محطة الحلاقة",
-    nameFr: "Meuble de station de coiffure",
-    price: 45000,
-    image: barberChair,
-    category: "furniture",
-    categoryAr: "الأثاث",
-    categoryFr: "Mobilier",
-    rating: 5,
-  },
-  {
-    id: 8,
-    name: "Hair Clipper Set",
-    nameAr: "طقم ماكينة حلاقة",
-    nameFr: "Kit tondeuse à cheveux",
-    price: 15000,
-    image: cosmetics,
-    category: "tools",
-    categoryAr: "أدوات الحلاقة",
-    categoryFr: "Outils de coiffure",
-    rating: 4,
-    isNew: true,
-  },
-  {
-    id: 9,
-    name: "Salon Wash Basin",
-    nameAr: "حوض غسيل الصالون",
-    nameFr: "Bac à shampoing de salon",
-    price: 38000,
-    originalPrice: 45000,
-    image: ledMirror,
-    category: "furniture",
-    categoryAr: "الأثاث",
-    categoryFr: "Mobilier",
-    rating: 5,
-    isSale: true,
-  },
-  {
-    id: 10,
-    name: "Makeup Brush Set",
-    nameAr: "طقم فرش المكياج",
-    nameFr: "Set de pinceaux de maquillage",
-    price: 6500,
-    image: cosmetics,
-    category: "accessories",
-    categoryAr: "الإكسسوارات",
-    categoryFr: "Accessoires",
-    rating: 4,
-  },
-  {
-    id: 11,
-    name: "Rotating Barber Pole",
-    nameAr: "عمود الحلاقة الدوار",
-    nameFr: "Enseigne de barbier rotative",
-    price: 22000,
-    image: barberChair,
-    category: "accessories",
-    categoryAr: "الإكسسوارات",
-    categoryFr: "Accessoires",
-    rating: 5,
-    isNew: true,
-  },
-  {
-    id: 12,
-    name: "Facial Steamer",
-    nameAr: "جهاز بخار الوجه",
-    nameFr: "Vapeur facial",
-    price: 9800,
-    originalPrice: 12500,
-    image: ledMirror,
-    category: "tools",
-    categoryAr: "أدوات الحلاقة",
-    categoryFr: "Outils de coiffure",
-    rating: 4,
-    isSale: true,
-  },
+  { id: "tools", label: "أدوات", labelFr: "Outils" },
+  { id: "accessories", label: "إكسسوارات", labelFr: "Accessoires" },
 ];

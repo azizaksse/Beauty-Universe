@@ -7,18 +7,17 @@ import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface ProductCardProps {
-  id: number;
+  id: string;
   name: string;
   nameAr: string;
-  nameFr: string;
   price: number;
-  originalPrice?: number;
-  image: string;
+  originalPrice?: number | null;
+  image: string | null;
   categoryAr: string;
   categoryFr: string;
-  rating: number;
-  isNew?: boolean;
-  isSale?: boolean;
+  rating: number | null;
+  isNew?: boolean | null;
+  isSale?: boolean | null;
   viewMode: "grid" | "list";
 }
 
@@ -26,13 +25,12 @@ const ProductCard = ({
   id,
   name,
   nameAr,
-  nameFr,
   price,
   originalPrice,
   image,
   categoryAr,
   categoryFr,
-  rating,
+  rating = 5,
   isNew,
   isSale,
   viewMode,
@@ -43,8 +41,9 @@ const ProductCard = ({
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
-  const displayName = language === 'ar' ? nameAr : nameFr;
+  const displayName = language === 'ar' ? nameAr : name;
   const displayCategory = language === 'ar' ? categoryAr : categoryFr;
+  const productRating = rating || 5;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,7 +52,6 @@ const ProductCard = ({
       id,
       name,
       nameAr,
-      nameFr,
       price,
       originalPrice,
       image,
@@ -61,12 +59,15 @@ const ProductCard = ({
     toast.success(t('cart.addedToCart'));
   };
 
+  const placeholderImage = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop";
+  const displayImage = image || placeholderImage;
+
   if (viewMode === "list") {
     return (
       <Link to={`/products/${id}`} className={`block bg-card rounded-2xl overflow-hidden card-hover border border-border flex flex-col sm:flex-row${dir === 'rtl' ? '-reverse' : ''}`}>
         <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
           <img
-            src={image}
+            src={displayImage}
             alt={name}
             className="w-full h-full object-cover"
           />
@@ -94,7 +95,7 @@ const ProductCard = ({
               {[...Array(5)].map((_, i) => (
                 <span
                   key={i}
-                  className={`text-sm ${i < rating ? "text-primary" : "text-muted"}`}
+                  className={`text-sm ${i < productRating ? "text-primary" : "text-muted"}`}
                 >
                   ★
                 </span>
@@ -131,7 +132,7 @@ const ProductCard = ({
     <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border group">
       <div className="relative aspect-square overflow-hidden">
         <img
-          src={image}
+          src={displayImage}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
@@ -168,7 +169,7 @@ const ProductCard = ({
           {[...Array(5)].map((_, i) => (
             <span
               key={i}
-              className={`text-sm ${i < rating ? "text-primary" : "text-muted"}`}
+              className={`text-sm ${i < productRating ? "text-primary" : "text-muted"}`}
             >
               ★
             </span>

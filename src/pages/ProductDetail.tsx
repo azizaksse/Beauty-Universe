@@ -1,38 +1,100 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ShoppingCart, Heart, ChevronRight, Minus, Plus, Share2, Truck, Shield, RotateCcw } from "lucide-react";
+import { ShoppingCart, Heart, ChevronRight, Minus, Plus, Share2, Truck, Shield, RotateCcw, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
-import { products } from "@/data/products";
+import { Product } from "@/data/products";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === Number(id));
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { language, t, dir } = useLanguage();
   const { addItem } = useCart();
+
+  useEffect(() => {
+    if (id) {
+      fetchProduct(id);
+    }
+  }, [id]);
+
+  const fetchProduct = async (productId: string) => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", productId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!error && data) {
+      setProduct(data);
+      fetchRelatedProducts(data.category, productId);
+    } else {
+      setProduct(null);
+    }
+    setLoading(false);
+  };
+
+  const fetchRelatedProducts = async (category: string, excludeId: string) => {
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("category", category)
+      .eq("is_active", true)
+      .neq("id", excludeId)
+      .limit(4);
+
+    if (data && data.length > 0) {
+      setRelatedProducts(data);
+    } else {
+      // Get any other products if no same category
+      const { data: otherData } = await supabase
+        .from("products")
+        .select("*")
+        .eq("is_active", true)
+        .neq("id", excludeId)
+        .limit(4);
+      setRelatedProducts(otherData || []);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
     addItem({
       id: product.id,
       name: product.name,
-      nameAr: product.nameAr,
-      nameFr: product.nameFr,
+      nameAr: product.name_ar,
       price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image,
+      originalPrice: product.original_price,
+      image: product.image_url,
     }, quantity);
     toast.success(t('cart.addedToCart'));
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background" dir={dir}>
+        <Header />
+        <div className="container mx-auto px-4 py-20 flex items-center justify-center">
+          <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="min-h-screen bg-background" dir={dir}>
@@ -50,32 +112,22 @@ const ProductDetail = () => {
     );
   }
 
-  const displayName = language === 'ar' ? product.nameAr : product.nameFr;
-  const displayCategory = language === 'ar' ? product.categoryAr : product.categoryFr;
+  const displayName = language === 'ar' ? product.name_ar : product.name;
+  const displayCategory = language === 'ar' ? product.category_ar : product.category;
 
   // Generate multiple images for gallery (using same image for demo)
-  const images = [product.image, product.image, product.image, product.image];
+  const placeholderImage = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop";
+  const mainImage = product.image_url || placeholderImage;
+  const images = [mainImage, mainImage, mainImage, mainImage];
 
-  // Related products (same category, excluding current)
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
-
-  // If not enough in same category, add others
-  const moreRelated = products
-    .filter((p) => p.id !== product.id && p.category !== product.category)
-    .slice(0, 4 - relatedProducts.length);
-  
-  const allRelated = [...relatedProducts, ...moreRelated];
-
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discount = product.original_price
+    ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : 0;
 
   const specifications = [
     { label: t('product.brand'), value: "Beauty Universe" },
     { label: t('product.category'), value: displayCategory },
-    { label: t('product.productNumber'), value: `BU-${product.id.toString().padStart(4, "0")}` },
+    { label: t('product.productNumber'), value: `BU-${product.id.slice(0, 8).toUpperCase()}` },
     { label: t('product.condition'), value: t('product.conditionNew') },
     { label: t('product.warrantyLabel'), value: t('product.warrantyValue') },
     { label: t('product.availability'), value: t('product.inStock') },
@@ -114,12 +166,12 @@ const ProductDetail = () => {
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                {product.isNew && (
+                {product.is_new && (
                   <span className={`absolute top-4 ${dir === 'rtl' ? 'right-4' : 'left-4'} bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full`}>
                     {t('product.new')}
                   </span>
                 )}
-                {product.isSale && (
+                {product.is_sale && (
                   <span className={`absolute top-4 ${dir === 'rtl' ? 'left-4' : 'right-4'} bg-destructive text-destructive-foreground text-sm font-bold px-4 py-2 rounded-full`}>
                     -{discount}%
                   </span>
@@ -160,13 +212,13 @@ const ProductDetail = () => {
                   {[...Array(5)].map((_, i) => (
                     <span
                       key={i}
-                      className={`text-xl ${i < product.rating ? "text-primary" : "text-muted"}`}
+                      className={`text-xl ${i < (product.rating || 5) ? "text-primary" : "text-muted"}`}
                     >
                       ★
                     </span>
                   ))}
                 </div>
-                <span className="text-muted-foreground">({product.rating} {t('product.outOf5')})</span>
+                <span className="text-muted-foreground">({product.rating || 5} {t('product.outOf5')})</span>
               </div>
 
               {/* Price */}
@@ -174,16 +226,16 @@ const ProductDetail = () => {
                 <span className="font-display text-4xl font-bold text-primary">
                   {formatPrice(product.price)} {t('product.currency')}
                 </span>
-                {product.originalPrice && (
+                {product.original_price && (
                   <span className="text-xl text-muted-foreground line-through">
-                    {formatPrice(product.originalPrice)} {t('product.currency')}
+                    {formatPrice(product.original_price)} {t('product.currency')}
                   </span>
                 )}
               </div>
 
               {/* Description */}
               <p className="text-muted-foreground leading-relaxed">
-                {t('product.description')}
+                {(language === 'ar' ? product.description_ar : product.description) || t('product.description')}
               </p>
 
               {/* Quantity & Add to Cart */}
@@ -275,7 +327,7 @@ const ProductDetail = () => {
       </section>
 
       {/* Related Products */}
-      {allRelated.length > 0 && (
+      {relatedProducts.length > 0 && (
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
@@ -287,21 +339,20 @@ const ProductDetail = () => {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {allRelated.map((p) => (
+              {relatedProducts.map((p) => (
                 <ProductCard
                   key={p.id}
                   id={p.id}
                   name={p.name}
-                  nameAr={p.nameAr}
-                  nameFr={p.nameFr}
+                  nameAr={p.name_ar}
                   price={p.price}
-                  originalPrice={p.originalPrice}
-                  image={p.image}
-                  categoryAr={p.categoryAr}
-                  categoryFr={p.categoryFr}
+                  originalPrice={p.original_price}
+                  image={p.image_url}
+                  categoryAr={p.category_ar}
+                  categoryFr={p.category}
                   rating={p.rating}
-                  isNew={p.isNew}
-                  isSale={p.isSale}
+                  isNew={p.is_new}
+                  isSale={p.is_sale}
                   viewMode="grid"
                 />
               ))}
