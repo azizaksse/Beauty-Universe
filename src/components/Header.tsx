@@ -1,4 +1,4 @@
-import { ShoppingCart, Search, Menu, X, User, UserCog } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, UserCog } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -91,31 +91,25 @@ const Header = () => {
               )}
             </Button>
 
-            {/* Auth */}
-            {user ? (
-              <div className="hidden md:flex items-center gap-2">
-                {isAdmin && (
-                  <Link to="/admin">
-                    <Button variant="ghost" size="icon" title={t('nav.dashboard')}>
-                      <UserCog className="w-5 h-5" />
-                    </Button>
-                  </Link>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => signOut()}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  {t('nav.logout')}
-                </Button>
-              </div>
-            ) : (
-              <Link to="/auth" className="hidden md:block">
-                <Button variant="ghost" size="icon">
-                  <User className="w-5 h-5" />
+            {/* Admin Panel - Only for admins */}
+            {user && isAdmin && (
+              <Link to="/admin" className="hidden md:block">
+                <Button variant="ghost" size="icon" title={t('nav.dashboard')}>
+                  <UserCog className="w-5 h-5" />
                 </Button>
               </Link>
+            )}
+            
+            {/* Logout button for logged in users */}
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="hidden md:flex text-muted-foreground hover:text-foreground"
+              >
+                {t('nav.logout')}
+              </Button>
             )}
 
             {/* Mobile Menu */}
@@ -171,15 +165,7 @@ const Header = () => {
                     {t('nav.logout')}
                   </button>
                 </>
-              ) : (
-                <Link
-                  to="/auth"
-                  className={`text-foreground hover:text-primary font-medium ${dir === 'rtl' ? 'text-right' : 'text-left'}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {t('nav.login')}
-                </Link>
-              )}
+              ) : null}
 
               <div className={`flex items-center gap-2 text-sm pt-2 ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}>
                 <button 
