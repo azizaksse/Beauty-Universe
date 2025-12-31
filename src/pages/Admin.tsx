@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Package, 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  Search, 
+import {
+  Package,
+  Plus,
+  Edit2,
+  Trash2,
+  Search,
   LogOut,
   LayoutDashboard,
   ChevronRight,
@@ -13,18 +13,30 @@ import {
   X,
   ImagePlus,
   Upload,
-  Loader2
+  Loader2,
+  ShoppingCart,
+  CheckCircle2,
+  Clock,
+  Truck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { normalizeProductImageValue, resolveProductGalleryUrls, resolveProductMainImageUrl } from "@/integrations/supabase/storage";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Product {
   id: string;
@@ -37,11 +49,34 @@ interface Product {
   category: string;
   category_ar: string;
   image_url: string | null;
+  main_image_path: string | null;
+  gallery_image_paths: string[] | null;
   rating: number | null;
   is_new: boolean | null;
   is_sale: boolean | null;
   is_active: boolean | null;
   stock: number | null;
+  created_at: string;
+}
+
+interface OrderItem {
+  name: string;
+  name_ar: string;
+  price: number;
+  quantity: number;
+}
+
+interface Order {
+  id: string;
+  customer_name: string;
+  phone: string;
+  wilaya: string;
+  delivery_type: string;
+  address: string | null;
+  notes: string | null;
+  items: OrderItem[];
+  total_amount: number;
+  status: string;
   created_at: string;
 }
 
@@ -64,6 +99,8 @@ const emptyProduct = {
   category: "chairs",
   category_ar: "كراسي الحلاقة",
   image_url: "",
+  main_image_path: "",
+  gallery_image_paths: [] as string[],
   rating: 5,
   is_new: false,
   is_sale: false,
@@ -72,10 +109,18 @@ const emptyProduct = {
 };
 
 const Admin = () => {
-  const { user, isAdmin, isLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signOut } = useAuth();
+  console.log("Admin component rendering");
 
+  useEffect(() => {
+    console.log("Admin component mounted");
+  }, []);
+
+  const [activeTab, setActiveTab] = useState<"products" | "orders">("products");
+
+  // Products State
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,30 +129,16 @@ const Admin = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        navigate("/auth");
-      } else if (!isAdmin) {
-        toast({
-          title: "غير مصرح",
-          description: "ليس لديك صلاحية الوصول لهذه الصفحة",
-          variant: "destructive",
-        });
-        navigate("/");
-      }
-    }
-  }, [user, isAdmin, isLoading, navigate, toast]);
+  // Orders State
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
-  useEffect(() => {
-    if (isAdmin) {
-      fetchProducts();
-    }
-  }, [isAdmin]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoadingProducts(true);
     const { data, error } = await supabase
       .from("products")
@@ -121,9 +152,65 @@ const Admin = () => {
         variant: "destructive",
       });
     } else {
-      setProducts(data || []);
+      const resolved = data
+        ? await Promise.all(
+            data.map(async (product) => ({
+              ...product,
+              image_url: await resolveProductMainImageUrl(product.image_url, product.main_image_path),
+            }))
+          )
+        : [];
+      setProducts(resolved);
     }
     setLoadingProducts(false);
+  }, [toast]);
+
+  const fetchOrders = useCallback(async () => {
+    setLoadingOrders(true);
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching orders:", error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل الطلبات",
+        variant: "destructive",
+      });
+    } else {
+      // Cast the items to OrderItem[] since Supabase returns them as JSON
+      const parsedOrders = (data || []).map(order => ({
+        ...order,
+        items: order.items as unknown as OrderItem[]
+      }));
+      setOrders(parsedOrders);
+    }
+    setLoadingOrders(false);
+  }, [toast]);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchOrders();
+  }, [fetchProducts, fetchOrders]);
+
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    const { error } = await supabase
+      .from("orders")
+      .update({ status: newStatus })
+      .eq("id", orderId);
+
+    if (error) {
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث حالة الطلب",
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "تم تحديث الحالة بنجاح" });
+      fetchOrders();
+    }
   };
 
   const handleSave = async () => {
@@ -147,7 +234,11 @@ const Admin = () => {
       original_price: editingProduct.original_price || null,
       category: editingProduct.category,
       category_ar: editingProduct.category_ar,
-      image_url: editingProduct.image_url || null,
+      image_url: normalizeProductImageValue(editingProduct.main_image_path) || null,
+      main_image_path: normalizeProductImageValue(editingProduct.main_image_path) || null,
+      gallery_image_paths: (editingProduct.gallery_image_paths || []).map((path) =>
+        normalizeProductImageValue(path)
+      ),
       rating: editingProduct.rating || 5,
       is_new: editingProduct.is_new || false,
       is_sale: editingProduct.is_sale || false,
@@ -163,6 +254,7 @@ const Admin = () => {
         .eq("id", editingProduct.id);
 
       if (error) {
+        console.error("Update product error:", error);
         toast({
           title: "خطأ",
           description: "فشل في تحديث المنتج",
@@ -178,6 +270,7 @@ const Admin = () => {
       const { error } = await supabase.from("products").insert(productData);
 
       if (error) {
+        console.error("Insert product error:", error);
         toast({
           title: "خطأ",
           description: "فشل في إضافة المنتج",
@@ -197,6 +290,7 @@ const Admin = () => {
     const { error } = await supabase.from("products").delete().eq("id", id);
 
     if (error) {
+      console.error("Delete product error:", error);
       toast({
         title: "خطأ",
         description: "فشل في حذف المنتج",
@@ -222,6 +316,8 @@ const Admin = () => {
         category: product.category,
         category_ar: product.category_ar,
         image_url: product.image_url || "",
+        main_image_path: product.main_image_path || "",
+        gallery_image_paths: product.gallery_image_paths || [],
         rating: product.rating || 5,
         is_new: product.is_new || false,
         is_sale: product.is_sale || false,
@@ -234,6 +330,20 @@ const Admin = () => {
     setIsDialogOpen(true);
   };
 
+  const updateImagePreviews = useCallback(async () => {
+    const mainUrl = await resolveProductMainImageUrl(
+      editingProduct.image_url || null,
+      editingProduct.main_image_path || null
+    );
+    const galleryUrls = await resolveProductGalleryUrls(editingProduct.gallery_image_paths || []);
+    setMainImagePreview(mainUrl);
+    setGalleryPreviews(galleryUrls);
+  }, [editingProduct.image_url, editingProduct.main_image_path, editingProduct.gallery_image_paths]);
+
+  useEffect(() => {
+    updateImagePreviews();
+  }, [updateImagePreviews]);
+
   const handleCategoryChange = (categoryId: string) => {
     const cat = categories.find((c) => c.id === categoryId);
     setEditingProduct({
@@ -243,54 +353,55 @@ const Admin = () => {
     });
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadToStorage = async (file: File) => {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `products/${fileName}`;
 
-    // Validate file type
+    const { error: uploadError } = await supabase.storage
+      .from("product-images")
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+    return filePath;
+  };
+
+  const validateImageFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast({
-        title: "خطأ",
-        description: "يرجى اختيار ملف صورة صالح",
+        title: "???",
+        description: "???? ?????? ??? ???? ????",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: "خطأ",
-        description: "حجم الصورة يجب أن يكون أقل من 5 ميجابايت",
+        title: "???",
+        description: "??? ?????? ??? ?? ???? ??? ?? 5 ????????",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
+    return true;
+  };
+
+  const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !validateImageFile(file)) return;
+
     setIsUploading(true);
-
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `products/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("product-images")
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from("product-images")
-        .getPublicUrl(filePath);
-
-      setEditingProduct({ ...editingProduct, image_url: urlData.publicUrl });
-      toast({ title: "تم رفع الصورة بنجاح" });
+      const filePath = await uploadToStorage(file);
+      setEditingProduct({ ...editingProduct, main_image_path: filePath });
+      toast({ title: "?? ??? ?????? ?????" });
     } catch (error) {
       console.error("Upload error:", error);
       toast({
-        title: "خطأ",
-        description: "فشل في رفع الصورة",
+        title: "???",
+        description: "??? ?? ??? ??????",
         variant: "destructive",
       });
     } finally {
@@ -301,26 +412,72 @@ const Admin = () => {
     }
   };
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.name_ar.includes(searchQuery)
-  );
+  const handleGalleryImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-  if (isLoading) {
+    const invalidFile = files.find((file) => !validateImageFile(file));
+    if (invalidFile) return;
+
+    setIsUploading(true);
+    try {
+      const uploadedPaths = [] as string[];
+      for (const file of files) {
+        const filePath = await uploadToStorage(file);
+        uploadedPaths.push(filePath);
+      }
+      setEditingProduct({
+        ...editingProduct,
+        gallery_image_paths: [...(editingProduct.gallery_image_paths || []), ...uploadedPaths],
+      });
+      toast({ title: "?? ??? ?????? ?????" });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "???",
+        description: "??? ?? ??? ??????",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+      if (galleryInputRef.current) {
+        galleryInputRef.current.value = "";
+      }
+    }
+  };  const handleExit = async () => {
+    await signOut();
+    navigate("/", { replace: true });
+  };
+
+  const filteredProducts = products.filter((p) => {
+    const query = searchQuery.toLowerCase();
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">جاري التحميل...</p>
-        </div>
-      </div>
+      (p.name || "").toLowerCase().includes(query) ||
+      (p.name_ar || "").includes(searchQuery)
     );
-  }
+  });
 
-  if (!isAdmin) {
-    return null;
-  }
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-700';
+      case 'confirmed': return 'bg-blue-100 text-blue-700';
+      case 'shipped': return 'bg-purple-100 text-purple-700';
+      case 'delivered': return 'bg-green-100 text-green-700';
+      case 'cancelled': return 'bg-red-100 text-red-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'قيد الانتظار';
+      case 'confirmed': return 'تم التأكيد';
+      case 'shipped': return 'تم الشحن';
+      case 'delivered': return 'تم التوصيل';
+      case 'cancelled': return 'ملغي';
+      default: return status;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-secondary" dir="rtl">
@@ -337,13 +494,26 @@ const Admin = () => {
         </div>
 
         <nav className="space-y-2">
-          <a
-            href="/admin"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-primary-foreground"
+          <button
+            onClick={() => setActiveTab("products")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "products"
+              ? "bg-primary text-primary-foreground"
+              : "text-foreground hover:bg-secondary"
+              }`}
           >
             <Package className="w-5 h-5" />
             <span>المنتجات</span>
-          </a>
+          </button>
+          <button
+            onClick={() => setActiveTab("orders")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "orders"
+              ? "bg-primary text-primary-foreground"
+              : "text-foreground hover:bg-secondary"
+              }`}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            <span>الطلبات</span>
+          </button>
           <a
             href="/"
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-foreground hover:bg-secondary transition-colors"
@@ -358,7 +528,7 @@ const Admin = () => {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => signOut().then(() => navigate("/"))}
+            onClick={handleExit}
           >
             <LogOut className="w-4 h-4 ml-2" />
             تسجيل الخروج
@@ -376,160 +546,259 @@ const Admin = () => {
             </div>
             <h1 className="font-display font-bold text-foreground">لوحة التحكم</h1>
           </div>
-          <Button variant="outline" size="icon" onClick={() => signOut().then(() => navigate("/"))}>
+          <Button variant="outline" size="icon" onClick={handleExit}>
             <LogOut className="w-4 h-4" />
           </Button>
         </div>
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-          <div>
-            <h2 className="font-display text-2xl font-bold text-foreground">إدارة المنتجات</h2>
-            <p className="text-muted-foreground">{products.length} منتج</p>
-          </div>
-          <Button variant="gold" onClick={() => openEditDialog()}>
-            <Plus className="w-4 h-4 ml-2" />
-            إضافة منتج
-          </Button>
-        </div>
-
-        {/* Search */}
-        <div className="relative mb-6">
-          <input
-            type="text"
-            placeholder="ابحث عن منتج..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full max-w-md bg-card border border-border rounded-xl px-4 py-3 pr-12 text-right placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        </div>
-
-        {/* Products Table */}
-        <div className="bg-card rounded-2xl border border-border overflow-hidden">
-          {loadingProducts ? (
-            <div className="p-12 text-center">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-muted-foreground">جاري التحميل...</p>
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="p-12 text-center">
-              <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">لا توجد منتجات</p>
-              <Button variant="gold" className="mt-4" onClick={() => openEditDialog()}>
+        {activeTab === "products" ? (
+          <>
+            {/* Products Header */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+              <div>
+                <h2 className="font-display text-2xl font-bold text-foreground">إدارة المنتجات</h2>
+                <p className="text-muted-foreground">{products.length} منتج</p>
+              </div>
+              <Button variant="gold" onClick={() => openEditDialog()}>
                 <Plus className="w-4 h-4 ml-2" />
-                أضف أول منتج
+                إضافة منتج
               </Button>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border bg-secondary/50">
-                    <th className="text-right px-4 py-3 font-medium text-foreground">المنتج</th>
-                    <th className="text-right px-4 py-3 font-medium text-foreground hidden md:table-cell">الفئة</th>
-                    <th className="text-right px-4 py-3 font-medium text-foreground">السعر</th>
-                    <th className="text-right px-4 py-3 font-medium text-foreground hidden sm:table-cell">المخزون</th>
-                    <th className="text-right px-4 py-3 font-medium text-foreground hidden sm:table-cell">الحالة</th>
-                    <th className="text-center px-4 py-3 font-medium text-foreground">الإجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b border-border hover:bg-secondary/30 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                            {product.image_url ? (
-                              <img
-                                src={product.image_url}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <ImagePlus className="w-5 h-5 text-muted-foreground" />
+
+            {/* Search */}
+            <div className="relative mb-6">
+              <input
+                type="text"
+                placeholder="ابحث عن منتج..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full max-w-md bg-card border border-border rounded-xl px-4 py-3 pr-12 text-right placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            </div>
+
+            {/* Products Table */}
+            <div className="bg-card rounded-2xl border border-border overflow-hidden card-3d">
+              {loadingProducts ? (
+                <div className="p-12 text-center">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-muted-foreground">جاري التحميل...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">لا توجد منتجات</p>
+                  <Button variant="gold" className="mt-4" onClick={() => openEditDialog()}>
+                    <Plus className="w-4 h-4 ml-2" />
+                    أضف أول منتج
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border bg-secondary/50">
+                        <th className="text-right px-4 py-3 font-medium text-foreground">المنتج</th>
+                        <th className="text-right px-4 py-3 font-medium text-foreground hidden md:table-cell">الفئة</th>
+                        <th className="text-right px-4 py-3 font-medium text-foreground">السعر</th>
+                        <th className="text-right px-4 py-3 font-medium text-foreground hidden sm:table-cell">المخزون</th>
+                        <th className="text-right px-4 py-3 font-medium text-foreground hidden sm:table-cell">الحالة</th>
+                        <th className="text-center px-4 py-3 font-medium text-foreground">الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredProducts.map((product) => (
+                        <tr key={product.id} className="border-b border-border hover:bg-secondary/30 transition-colors">
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                                {product.image_url ? (
+                                  <img
+                                    src={product.image_url}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <ImagePlus className="w-5 h-5 text-muted-foreground" />
+                                  </div>
+                                )}
                               </div>
+                              <div>
+                                <p className="font-medium text-foreground">{product.name_ar}</p>
+                                <p className="text-sm text-muted-foreground">{product.name}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 hidden md:table-cell">
+                            <span className="text-muted-foreground">{product.category_ar}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="font-medium text-primary">{product.price.toLocaleString()} دج</span>
+                            {product.original_price && (
+                              <span className="text-sm text-muted-foreground line-through block">
+                                {product.original_price.toLocaleString()} دج
+                              </span>
                             )}
-                          </div>
-                          <div>
-                            <p className="font-medium text-foreground">{product.name_ar}</p>
-                            <p className="text-sm text-muted-foreground">{product.name}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <span className="text-muted-foreground">{product.category_ar}</span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="font-medium text-primary">{product.price.toLocaleString()} دج</span>
-                        {product.original_price && (
-                          <span className="text-sm text-muted-foreground line-through block">
-                            {product.original_price.toLocaleString()} دج
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        <span className={product.stock && product.stock > 0 ? "text-green-600" : "text-destructive"}>
-                          {product.stock || 0}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                            product.is_active
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {product.is_active ? "نشط" : "غير نشط"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openEditDialog(product)}
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          {deleteConfirmId === product.id ? (
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDelete(product.id)}
-                              >
-                                تأكيد
-                              </Button>
+                          </td>
+                          <td className="px-4 py-3 hidden sm:table-cell">
+                            <span className={product.stock && product.stock > 0 ? "text-green-600" : "text-destructive"}>
+                              {product.stock || 0}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 hidden sm:table-cell">
+                            <span
+                              className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${product.is_active
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                                }`}
+                            >
+                              {product.is_active ? "نشط" : "غير نشط"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center gap-2">
                               <Button
                                 variant="ghost"
-                                size="sm"
-                                onClick={() => setDeleteConfirmId(null)}
+                                size="icon"
+                                onClick={() => openEditDialog(product)}
                               >
-                                إلغاء
+                                <Edit2 className="w-4 h-4" />
                               </Button>
+                              {deleteConfirmId === product.id ? (
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDelete(product.id)}
+                                  >
+                                    تأكيد
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setDeleteConfirmId(null)}
+                                  >
+                                    إلغاء
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => setDeleteConfirmId(product.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
                             </div>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive hover:text-destructive"
-                              onClick={() => setDeleteConfirmId(product.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          <>
+            {/* Orders Header */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+              <div>
+                <h2 className="font-display text-2xl font-bold text-foreground">إدارة الطلبات</h2>
+                <p className="text-muted-foreground">{orders.length} طلب</p>
+              </div>
+              <Button variant="outline" onClick={fetchOrders}>
+                تحديث
+              </Button>
+            </div>
+
+            {/* Orders List */}
+            <div className="space-y-4">
+              {loadingOrders ? (
+                <div className="p-12 text-center bg-card rounded-2xl border border-border card-3d">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-muted-foreground">جاري تحميل الطلبات...</p>
+                </div>
+              ) : orders.length === 0 ? (
+                <div className="p-12 text-center bg-card rounded-2xl border border-border card-3d">
+                  <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">لا توجد طلبات حتى الآن</p>
+                </div>
+              ) : (
+                orders.map((order) => (
+                  <div key={order.id} className="bg-card rounded-2xl border border-border p-6 shadow-sm card-3d">
+                    <div className="flex flex-col lg:flex-row gap-6 justify-between">
+                      {/* Order Info */}
+                      <div className="space-y-4 flex-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-display text-lg font-bold text-foreground">
+                            {order.customer_name}
+                          </h3>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                            {getStatusLabel(order.status)}
+                          </span>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Truck className="w-4 h-4" />
+                            <span>{order.delivery_type === 'home' ? 'توصيل للمنزل' : 'مكتب التوصيل'} - {order.wilaya}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Clock className="w-4 h-4" />
+                            <span>{new Date(order.created_at).toLocaleDateString('ar-DZ')}</span>
+                          </div>
+                          <div className="col-span-2 text-foreground">
+                            <p><strong>الهاتف:</strong> {order.phone}</p>
+                            {order.address && <p><strong>العنوان:</strong> {order.address}</p>}
+                            {order.notes && <p className="mt-1 text-yellow-600 bg-yellow-50 p-2 rounded"><strong>ملاحظة:</strong> {order.notes}</p>}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Items & Actions */}
+                      <div className="flex flex-col gap-4 min-w-[300px]">
+                        <div className="bg-secondary/50 rounded-xl p-4 space-y-3">
+                          {order.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between text-sm">
+                              <span>{item.quantity}x {item.name_ar}</span>
+                              <span className="font-medium">{item.price.toLocaleString()} دج</span>
+                            </div>
+                          ))}
+                          <div className="border-t border-border pt-3 flex justify-between font-bold text-primary">
+                            <span>الإجمالي</span>
+                            <span>{order.total_amount.toLocaleString()} دج</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Select
+                            defaultValue={order.status}
+                            onValueChange={(val) => updateOrderStatus(order.id, val)}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="تغيير الحالة" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">قيد الانتظار</SelectItem>
+                              <SelectItem value="confirmed">تم التأكيد</SelectItem>
+                              <SelectItem value="shipped">تم الشحن</SelectItem>
+                              <SelectItem value="delivered">تم التوصيل</SelectItem>
+                              <SelectItem value="cancelled">ملغي</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
       </main>
 
       {/* Product Dialog */}
@@ -636,15 +905,14 @@ const Admin = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-foreground mb-2">
-                صورة المنتج
+                الصورة الرئيسية
               </label>
               <div className="flex gap-4 items-start">
-                {/* Image Preview */}
                 <div className="w-32 h-32 rounded-xl border-2 border-dashed border-border bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {editingProduct.image_url ? (
+                  {mainImagePreview ? (
                     <img
-                      src={editingProduct.image_url}
-                      alt="Preview"
+                      src={mainImagePreview}
+                      alt="Main preview"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -652,15 +920,14 @@ const Admin = () => {
                   )}
                 </div>
 
-                {/* Upload Controls */}
                 <div className="flex-1 space-y-3">
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    onChange={handleImageUpload}
+                    onChange={handleMainImageUpload}
                     className="hidden"
-                    id="product-image-upload"
+                    id="product-main-image-upload"
                   />
                   <Button
                     type="button"
@@ -677,27 +944,67 @@ const Admin = () => {
                     ) : (
                       <>
                         <Upload className="w-4 h-4 ml-2" />
-                        رفع صورة
+                        رفع الصورة الرئيسية
                       </>
                     )}
                   </Button>
-                  
-                  <p className="text-xs text-muted-foreground">
-                    أو أدخل رابط الصورة مباشرة:
-                  </p>
-                  <input
-                    type="url"
-                    value={editingProduct.image_url}
-                    onChange={(e) =>
-                      setEditingProduct({ ...editingProduct, image_url: e.target.value })
-                    }
-                    className="w-full bg-secondary border border-border rounded-xl px-4 py-2 text-right text-sm"
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <p className="text-xs text-muted-foreground">JPG, PNG - 5MB</p>
                 </div>
               </div>
             </div>
 
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                صور المعرض
+              </label>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap gap-3">
+                  {galleryPreviews.length > 0 ? (
+                    galleryPreviews.map((src, idx) => (
+                      <div
+                        key={`${src}-${idx}`}
+                        className="w-20 h-20 rounded-lg border border-border bg-secondary overflow-hidden"
+                      >
+                        <img src={src} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="w-20 h-20 rounded-lg border border-dashed border-border bg-secondary flex items-center justify-center">
+                      <ImagePlus className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  ref={galleryInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryImagesUpload}
+                  className="hidden"
+                  id="product-gallery-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                      جاري الرفع...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 ml-2" />
+                      رفع صور المعرض
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-foreground mb-2">
                 الوصف (عربي)
@@ -767,3 +1074,4 @@ const Admin = () => {
 };
 
 export default Admin;
+

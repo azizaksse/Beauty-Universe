@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/data/products";
 import { ProductCardSkeleton } from "@/components/Skeleton";
 import { formatPrice } from "@/lib/utils";
+import { resolveProductMainImageUrl } from "@/integrations/supabase/storage";
 
 const BestSellers = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -27,7 +28,13 @@ const BestSellers = () => {
       .limit(3);
 
     if (!error && data) {
-      setProducts(data);
+      const resolved = await Promise.all(
+        data.map(async (product) => ({
+          ...product,
+          image_url: await resolveProductMainImageUrl(product.image_url, product.main_image_path),
+        }))
+      );
+      setProducts(resolved);
     }
     setLoading(false);
   };
@@ -74,7 +81,7 @@ const BestSellers = () => {
               >
                 <Link
                   to={`/products/${product.id}`}
-                  className="group block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover"
+                  className="group block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover card-3d"
                 >
                 {/* Image */}
                 <div className="relative aspect-square overflow-hidden bg-secondary">

@@ -81,7 +81,7 @@ const ProductCard = ({
 
   if (viewMode === "list") {
     return (
-      <Link to={`/products/${id}`} className={`block bg-card rounded-2xl overflow-hidden card-hover border border-border flex flex-col sm:flex-row${dir === 'rtl' ? '-reverse' : ''}`}>
+      <Link to={`/products/${id}`} className={`block bg-card rounded-2xl overflow-hidden card-hover card-3d border border-border flex flex-col sm:flex-row${dir === 'rtl' ? '-reverse' : ''}`}>
         <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0 bg-secondary">
           <img
             src={displayImage}
@@ -148,7 +148,7 @@ const ProductCard = ({
   }
 
   return (
-    <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover border border-border group transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
+    <Link to={`/products/${id}`} className="block bg-card rounded-2xl overflow-hidden card-hover card-3d border border-border group transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
       <div className="relative aspect-square overflow-hidden bg-secondary">
         {/* Skeleton placeholder */}
         {!imageLoaded && (

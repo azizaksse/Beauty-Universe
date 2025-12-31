@@ -5,6 +5,8 @@ export interface Product {
   price: number;
   original_price?: number | null;
   image_url: string | null;
+  main_image_path?: string | null;
+  gallery_image_paths?: string[] | null;
   category: string;
   category_ar: string;
   rating: number | null;

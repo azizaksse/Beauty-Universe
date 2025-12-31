@@ -51,7 +51,7 @@ const Reviews = () => {
               key={review.id}
               animation="fade-up"
               delay={index * 100}
-              className="bg-card rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              className="bg-card rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 card-3d"
             >
               {/* Stars */}
               <div className={`flex gap-1 mb-4 ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}>

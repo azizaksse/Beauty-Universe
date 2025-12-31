@@ -16,6 +16,7 @@ import { categories, Product } from "@/data/products";
 import { useLanguage } from "@/hooks/useLanguage";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCardSkeleton } from "@/components/Skeleton";
+import { resolveProductMainImageUrl } from "@/integrations/supabase/storage";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "rating" | "newest";
 type ViewMode = "grid" | "list";
@@ -43,7 +44,13 @@ const Products = () => {
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setProducts(data);
+      const resolved = await Promise.all(
+        data.map(async (product) => ({
+          ...product,
+          image_url: await resolveProductMainImageUrl(product.image_url, product.main_image_path),
+        }))
+      );
+      setProducts(resolved);
     }
     setLoading(false);
   };
@@ -186,7 +193,7 @@ const Products = () => {
             <aside
               className={`lg:w-64 flex-shrink-0 ${showFilters ? "block" : "hidden lg:block"}`}
             >
-              <div className="bg-card border border-border rounded-2xl p-6 sticky top-24">
+              <div className="bg-card border border-border rounded-2xl p-6 sticky top-24 card-3d">
                 <h3 className="font-display text-lg font-semibold text-foreground mb-4">
                   {t('products.categories')}
                 </h3>

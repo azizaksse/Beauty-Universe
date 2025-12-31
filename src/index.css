@@ -158,6 +158,35 @@
       0 40px 60px -20px rgba(0, 0, 0, 0.12);
   }
 
+  .card-3d {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 300ms ease, box-shadow 300ms ease;
+    box-shadow:
+      0 6px 12px -3px rgba(0, 0, 0, 0.12),
+      0 18px 36px -12px rgba(0, 0, 0, 0.16),
+      0 40px 80px -30px rgba(0, 0, 0, 0.18);
+  }
+
+  .card-3d::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+    opacity: 0.45;
+    transform: translateZ(1px);
+  }
+
+  .card-3d:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 10px 20px -4px rgba(0, 0, 0, 0.18),
+      0 26px 52px -16px rgba(0, 0, 0, 0.22),
+      0 60px 120px -40px rgba(0, 0, 0, 0.25);
+  }
+
   .btn-gold {
     @apply bg-primary text-primary-foreground hover:bg-gold-dark transition-all duration-300 shadow-md hover:shadow-lg;
   }

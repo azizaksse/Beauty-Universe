@@ -7,7 +7,7 @@ export const Skeleton = ({ className = "" }: SkeletonProps) => (
 );
 
 export const ProductCardSkeleton = () => (
-  <div className="bg-card rounded-2xl overflow-hidden border border-border">
+  <div className="bg-card rounded-2xl overflow-hidden border border-border card-3d">
     <Skeleton className="aspect-square" />
     <div className="p-4 space-y-3">
       <Skeleton className="h-3 w-16" />
@@ -30,7 +30,7 @@ export const CategorySkeleton = () => (
 );
 
 export const ReviewSkeleton = () => (
-  <div className="bg-card rounded-2xl p-6 border border-border">
+  <div className="bg-card rounded-2xl p-6 border border-border card-3d">
     <div className="flex gap-1 mb-4">
       {[...Array(5)].map((_, i) => (
         <Skeleton key={i} className="w-5 h-5 rounded-full" />

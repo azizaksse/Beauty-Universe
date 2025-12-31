@@ -66,11 +66,13 @@ export type Database = {
           created_at: string
           description: string | null
           description_ar: string | null
+          gallery_image_paths: string[] | null
           id: string
           image_url: string | null
           is_active: boolean | null
           is_new: boolean | null
           is_sale: boolean | null
+          main_image_path: string | null
           name: string
           name_ar: string
           original_price: number | null
@@ -85,11 +87,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           description_ar?: string | null
+          gallery_image_paths?: string[] | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
           is_new?: boolean | null
           is_sale?: boolean | null
+          main_image_path?: string | null
           name: string
           name_ar: string
           original_price?: number | null
@@ -104,11 +108,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           description_ar?: string | null
+          gallery_image_paths?: string[] | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
           is_new?: boolean | null
           is_sale?: boolean | null
+          main_image_path?: string | null
           name?: string
           name_ar?: string
           original_price?: number | null
