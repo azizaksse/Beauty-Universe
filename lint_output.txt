@@ -1,0 +1,48 @@
+
+> vite_react_shadcn_ts@0.0.0 lint
+> eslint .
+
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\badge.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\button.tsx
+  50:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\command.tsx
+  24:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\form.tsx
+  129:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\sidebar.tsx
+  636:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\sonner.tsx
+  27:19  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\textarea.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\components\ui\toggle.tsx
+  37:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\hooks\useAuth.tsx
+  119:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\hooks\useCart.tsx
+  103:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\hooks\useLanguage.tsx
+  299:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  307:16  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Admin\Desktop\site clone\site-clone-magic\src\hooks\useScrollAnimation.tsx
+   9:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                         react-refresh/only-export-components
+  35:32  warning  The ref value 'ref.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'ref.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+Γ£û 15 problems (2 errors, 13 warnings)
+
