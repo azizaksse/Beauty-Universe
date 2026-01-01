@@ -1,10 +1,10 @@
-import { ShoppingCart, Search, Menu, X, UserCog } from "lucide-react";
+import { Search, Menu, X, UserCog } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useCart } from "@/hooks/useCart";
+
 import logo from "@/assets/logo.png";
 
 const Header = () => {
@@ -13,7 +13,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
   const { language, setLanguage, t, dir } = useLanguage();
-  const { totalItems, setIsOpen } = useCart();
+
 
   const scrollToContact = () => {
     if (location.pathname !== '/') {
@@ -62,11 +62,10 @@ const Header = () => {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className={`transition-colors font-medium ${
-                    location.pathname === link.href
+                  className={`transition-colors font-medium ${location.pathname === link.href
                       ? "text-primary"
                       : "text-foreground hover:text-primary"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -78,14 +77,14 @@ const Header = () => {
           <div className="flex items-center gap-4">
             {/* Language Switcher */}
             <div className="hidden sm:flex items-center gap-2 text-sm">
-              <button 
+              <button
                 onClick={() => setLanguage('ar')}
                 className={language === 'ar' ? "font-bold text-foreground" : "text-muted-foreground hover:text-foreground transition-colors"}
               >
                 AR
               </button>
               <span className="text-muted-foreground">|</span>
-              <button 
+              <button
                 onClick={() => setLanguage('fr')}
                 className={language === 'fr' ? "font-bold text-foreground" : "text-muted-foreground hover:text-foreground transition-colors"}
               >
@@ -103,15 +102,7 @@ const Header = () => {
               <Search className="w-4 h-4 text-muted-foreground" />
             </div>
 
-            {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative" onClick={() => setIsOpen(true)}>
-              <ShoppingCart className="w-5 h-5" />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                  {totalItems > 99 ? '99+' : totalItems}
-                </span>
-              )}
-            </Button>
+
 
             {/* Admin Panel - Only for admins */}
             {user && isAdmin && (
@@ -121,7 +112,7 @@ const Header = () => {
                 </Button>
               </Link>
             )}
-            
+
             {/* Logout button for logged in users */}
             {user && (
               <Button
@@ -166,11 +157,10 @@ const Header = () => {
                   <Link
                     key={link.label}
                     to={link.href}
-                    className={`transition-colors font-medium ${dir === 'rtl' ? 'text-right' : 'text-left'} ${
-                      location.pathname === link.href
+                    className={`transition-colors font-medium ${dir === 'rtl' ? 'text-right' : 'text-left'} ${location.pathname === link.href
                         ? "text-primary"
                         : "text-foreground hover:text-primary"
-                    }`}
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
@@ -203,14 +193,14 @@ const Header = () => {
               ) : null}
 
               <div className={`flex items-center gap-2 text-sm pt-2 ${dir === 'rtl' ? 'justify-end' : 'justify-start'}`}>
-                <button 
+                <button
                   onClick={() => setLanguage('ar')}
                   className={language === 'ar' ? "font-bold text-foreground" : "text-muted-foreground hover:text-foreground transition-colors"}
                 >
                   AR
                 </button>
                 <span className="text-muted-foreground">|</span>
-                <button 
+                <button
                   onClick={() => setLanguage('fr')}
                   className={language === 'fr' ? "font-bold text-foreground" : "text-muted-foreground hover:text-foreground transition-colors"}
                 >

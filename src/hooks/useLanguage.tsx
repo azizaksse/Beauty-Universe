@@ -14,7 +14,7 @@ const translations = {
     // Announcement Bar
     'announcement.welcome': 'مرحبا بكم التوصيل متوفر',
     'announcement.wilayas': 'ولاية والدفع عند الاستلام',
-    
+
     // Header
     'nav.home': 'الرئيسية',
     'nav.catalog': 'الكتالوج',
@@ -23,25 +23,25 @@ const translations = {
     'nav.logout': 'خروج',
     'nav.login': 'تسجيل الدخول',
     'nav.dashboard': 'لوحة التحكم',
-    
+
     // Hero
     'hero.badge': 'تشكيلة جديدة 2026',
     'hero.title': 'Beauty Universe - عالم الجمال في الجزائر',
     'hero.description': 'بيع وتوزيع معدات ومنتجات ومواد الحلاقة والتجميل ومستحضرات التجميل. توصيل لـ 69 ولاية.',
     'hero.cta': 'اكتشفي الآن',
-    
+
     // Categories
     'categories.label': 'فئاتنا',
     'categories.title': 'اكتشفي عالم الجمال',
     'categories.barber': 'حلاقة',
     'categories.beauty': 'تجميل',
     'categories.cosmetics': 'مستحضرات تجميل',
-    
+
     // Best Sellers
     'bestsellers.label': 'المفضلة',
     'bestsellers.title': 'الأكثر مبيعاً حالياً',
     'bestsellers.viewAll': 'عرض الكل',
-    
+
     // Trust Badges
     'trust.delivery.title': 'توصيل 69 ولاية',
     'trust.delivery.description': 'شحن سريع والدفع عند الاستلام.',
@@ -49,19 +49,19 @@ const translations = {
     'trust.exchange.description': 'إمكانية الاستبدال خلال 7 أيام مع رسوم الإرجاع.',
     'trust.payment.title': 'الدفع عند الاستلام',
     'trust.payment.description': 'لا يوجد دفع عبر الإنترنت، كل شيء يتم عند التسليم.',
-    
+
     // Reviews
     'reviews.title': 'آراء العملاء',
     'reviews.subtitle': 'ماذا يقول عملاؤنا عنا',
     'reviews.verified': 'عميل موثق',
-    
+
     // Footer
     'footer.description': 'بيع وتوزيع معدات ومنتجات ومواد الحلاقة والتجميل ومستحضرات التجميل.',
     'footer.quickLinks': 'روابط سريعة',
     'footer.aboutUs': 'من نحن',
     'footer.contactUs': 'تواصل معنا',
     'footer.copyright': '© 2026 Beauty Universe. جميع الحقوق محفوظة.',
-    
+
     // Auth
     'auth.login': 'تسجيل الدخول',
     'auth.signup': 'إنشاء حساب',
@@ -95,7 +95,6 @@ const translations = {
 
     // Product Card
     'product.new': 'جديد',
-    'product.addToCart': 'أضف للسلة',
     'product.currency': 'دج',
 
     // Product Detail
@@ -121,22 +120,12 @@ const translations = {
     'product.inStock': 'متوفر في المخزون',
     'product.relatedProducts': 'منتجات ذات صلة',
     'product.viewAll': 'عرض الكل',
-
-    // Cart
-    'cart.title': 'سلة التسوق',
-    'cart.empty': 'سلة التسوق فارغة',
-    'cart.continueShopping': 'متابعة التسوق',
-    'cart.subtotal': 'المجموع الفرعي',
-    'cart.shippingNote': 'الشحن والضرائب تُحسب عند الدفع',
-    'cart.checkout': 'إتمام الشراء',
-    'cart.clearCart': 'إفراغ السلة',
-    'cart.addedToCart': 'تمت الإضافة للسلة',
   },
   fr: {
     // Announcement Bar
     'announcement.welcome': 'Bienvenue ! Livraison disponible dans',
     'announcement.wilayas': 'wilayas avec paiement à la livraison',
-    
+
     // Header
     'nav.home': 'Accueil',
     'nav.catalog': 'Catalogue',
@@ -145,25 +134,25 @@ const translations = {
     'nav.logout': 'Déconnexion',
     'nav.login': 'Connexion',
     'nav.dashboard': 'Tableau de bord',
-    
+
     // Hero
     'hero.badge': 'Nouvelle Collection 2026',
     'hero.title': 'Beauty Universe - L\'univers de la beauté en Algérie',
     'hero.description': 'Vente et distribution d\'équipements, produits et matériels de coiffure, d\'esthétique et de cosmétiques. Livraison dans 69 wilayas.',
     'hero.cta': 'Découvrir maintenant',
-    
+
     // Categories
     'categories.label': 'Nos Catégories',
     'categories.title': 'Découvrez l\'univers de la beauté',
     'categories.barber': 'Coiffure',
     'categories.beauty': 'Esthétique',
     'categories.cosmetics': 'Cosmétiques',
-    
+
     // Best Sellers
     'bestsellers.label': 'Favoris',
     'bestsellers.title': 'Meilleures ventes actuelles',
     'bestsellers.viewAll': 'Voir tout',
-    
+
     // Trust Badges
     'trust.delivery.title': 'Livraison 69 wilayas',
     'trust.delivery.description': 'Expédition rapide et paiement à la livraison.',
@@ -171,19 +160,19 @@ const translations = {
     'trust.exchange.description': 'Possibilité d\'échange sous 7 jours avec frais de retour.',
     'trust.payment.title': 'Paiement à la livraison',
     'trust.payment.description': 'Pas de paiement en ligne, tout se fait à la livraison.',
-    
+
     // Reviews
     'reviews.title': 'Avis Clients',
     'reviews.subtitle': 'Ce que nos clients disent de nous',
     'reviews.verified': 'Client vérifié',
-    
+
     // Footer
     'footer.description': 'Vente et distribution d\'équipements, produits et matériels de coiffure, d\'esthétique et de cosmétiques.',
     'footer.quickLinks': 'Liens rapides',
     'footer.aboutUs': 'À propos',
     'footer.contactUs': 'Contactez-nous',
     'footer.copyright': '© 2026 Beauty Universe. Tous droits réservés.',
-    
+
     // Auth
     'auth.login': 'Connexion',
     'auth.signup': 'Créer un compte',
@@ -217,7 +206,6 @@ const translations = {
 
     // Product Card
     'product.new': 'Nouveau',
-    'product.addToCart': 'Ajouter au panier',
     'product.currency': 'DA',
 
     // Product Detail
@@ -243,16 +231,6 @@ const translations = {
     'product.inStock': 'En stock',
     'product.relatedProducts': 'Produits similaires',
     'product.viewAll': 'Voir tout',
-
-    // Cart
-    'cart.title': 'Panier',
-    'cart.empty': 'Votre panier est vide',
-    'cart.continueShopping': 'Continuer vos achats',
-    'cart.subtotal': 'Sous-total',
-    'cart.shippingNote': 'Livraison et taxes calculées à la caisse',
-    'cart.checkout': 'Passer à la caisse',
-    'cart.clearCart': 'Vider le panier',
-    'cart.addedToCart': 'Ajouté au panier',
   },
 };
 

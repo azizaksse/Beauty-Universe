@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Package,
   Plus,
@@ -137,6 +139,30 @@ const Admin = () => {
   // Orders State
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const auth = sessionStorage.getItem("admin_auth");
+    if (auth === "true") {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "adminbu") {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("admin_auth", "true");
+      toast({ title: "تم تسجيل الدخول بنجاح" });
+    } else {
+      toast({
+        title: "خطأ",
+        description: "كلمة المرور غير صحيحة",
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchProducts = useCallback(async () => {
     setLoadingProducts(true);
@@ -154,11 +180,11 @@ const Admin = () => {
     } else {
       const resolved = data
         ? await Promise.all(
-            data.map(async (product) => ({
-              ...product,
-              image_url: await resolveProductMainImageUrl(product.image_url, product.main_image_path),
-            }))
-          )
+          data.map(async (product) => ({
+            ...product,
+            image_url: await resolveProductMainImageUrl(product.image_url, product.main_image_path),
+          }))
+        )
         : [];
       setProducts(resolved);
     }
@@ -444,7 +470,10 @@ const Admin = () => {
         galleryInputRef.current.value = "";
       }
     }
-  };  const handleExit = async () => {
+  };
+
+  const handleExit = async () => {
+    sessionStorage.removeItem("admin_auth");
     await signOut();
     navigate("/", { replace: true });
   };
@@ -478,6 +507,46 @@ const Admin = () => {
       default: return status;
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-secondary flex items-center justify-center p-4" dir="rtl">
+        <div className="w-full max-w-md bg-card rounded-3xl border border-border p-8 shadow-2xl card-3d">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <span className="text-primary font-display text-3xl font-bold">BU</span>
+            </div>
+            <h1 className="font-display text-2xl font-bold text-foreground">دخول الإدارة</h1>
+            <p className="text-muted-foreground mt-2">يرجى إدخال كلمة المرور للمتابعة</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="password">كلمة المرور</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="h-12 bg-secondary/30 border-none rounded-xl text-center text-lg"
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg transition-all">
+              تسجيل الدخول
+            </Button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              العودة للموقع الرئيسي
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-secondary" dir="rtl">
