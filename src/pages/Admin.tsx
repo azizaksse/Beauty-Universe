@@ -130,6 +130,7 @@ const Admin = () => {
   const [editingProduct, setEditingProduct] = useState<typeof emptyProduct & { id?: string }>(emptyProduct);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -319,7 +320,7 @@ const Admin = () => {
       console.error("Delete product error:", error);
       toast({
         title: "خطأ",
-        description: "فشل في حذف المنتج",
+        description: `فشل في حذف المنتج: ${error.message}`,
         variant: "destructive",
       });
     } else {
@@ -327,6 +328,23 @@ const Admin = () => {
       fetchProducts();
     }
     setDeleteConfirmId(null);
+  };
+
+  const handleDeleteAll = async () => {
+    const { error } = await supabase.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+
+    if (error) {
+      console.error("Delete all products error:", error);
+      toast({
+        title: "خطأ",
+        description: `فشل في حذف جميع المنتجات: ${error.message}`,
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "تم حذف جميع المنتجات بنجاح" });
+      fetchProducts();
+    }
+    setDeleteAllConfirm(false);
   };
 
   const openEditDialog = (product?: Product) => {
@@ -628,10 +646,32 @@ const Admin = () => {
                 <h2 className="font-display text-2xl font-bold text-foreground">إدارة المنتجات</h2>
                 <p className="text-muted-foreground">{products.length} منتج</p>
               </div>
-              <Button variant="gold" onClick={() => openEditDialog()}>
-                <Plus className="w-4 h-4 ml-2" />
-                إضافة منتج
-              </Button>
+              <div className="flex gap-2">
+                {deleteAllConfirm ? (
+                  <div className="flex items-center gap-2 bg-destructive/10 p-1 rounded-lg border border-destructive/20">
+                    <span className="text-xs text-destructive font-medium px-2">هل أنت متأكد؟</span>
+                    <Button variant="destructive" size="sm" onClick={handleDeleteAll}>
+                      تأكيد الحذف
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setDeleteAllConfirm(false)}>
+                      إلغاء
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => setDeleteAllConfirm(true)}
+                  >
+                    <Trash2 className="w-4 h-4 ml-2" />
+                    حذف الكل
+                  </Button>
+                )}
+                <Button variant="gold" onClick={() => openEditDialog()}>
+                  <Plus className="w-4 h-4 ml-2" />
+                  إضافة منتج
+                </Button>
+              </div>
             </div>
 
             {/* Search */}
