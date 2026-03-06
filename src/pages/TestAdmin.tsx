@@ -16,7 +16,7 @@ const TestAdmin = () => {
 
     const handleWhatsAppOrder = () => {
         const message = `New Order:\nProduct: ${product.name}\nName: ${name}\nPhone: ${phone}\nWilaya: ${wilaya}\nQuantity: ${quantity}`;
-        const url = `https://wa.me/213771514101?text=${encodeURIComponent(
+        const url = `https://wa.me/213555852522?text=${encodeURIComponent(
             message
         )}`;
         window.open(url, "_blank", "noopener,noreferrer");

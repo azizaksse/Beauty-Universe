@@ -126,7 +126,7 @@ const ProductDetail = () => {
 
     let message = `طلب جديد:\nالمنتج: ${productName}\nالاسم: ${leadName}\nالهاتف: ${leadPhone}\nالولاية: ${leadWilaya}\nالمدينة: ${leadCity}\nنوع التوصيل: ${deliveryMethodText}\nالكمية: ${quantity}\nالسعر الإجمالي: ${formatPrice(product.price * quantity)} ${t('product.currency')}`;
 
-    const url = `https://wa.me/213771514101?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/213555852522?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
